@@ -18,6 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.sql.Date; // java.sql.Date for SQL queries
 import java.util.Locale;
+
 public class ResidentForm {
 
     public JFrame frame;
@@ -256,7 +257,7 @@ public class ResidentForm {
             }
         });
         btnAdd.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        btnAdd.setBounds(91, 612, 138, 45);
+        btnAdd.setBounds(211, 612, 138, 45);
         welcomePanel.add(btnAdd);
      // Button for Update
         JButton btnUpdate = new JButton("Update");
@@ -335,7 +336,7 @@ public class ResidentForm {
         });
 
         btnUpdate.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        btnUpdate.setBounds(283, 612, 138, 45);
+        btnUpdate.setBounds(403, 612, 138, 45);
         welcomePanel.add(btnUpdate);
 
         
@@ -364,14 +365,8 @@ public class ResidentForm {
         });
 
         btnDel.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        btnDel.setBounds(477, 612, 138, 45);
+        btnDel.setBounds(597, 612, 138, 45);
         welcomePanel.add(btnDel);
-
-        
-        JButton btnPrint = new JButton("Print ID");
-        btnPrint.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        btnPrint.setBounds(670, 612, 138, 45);
-        welcomePanel.add(btnPrint);
     }
     
     private void filterTable(String searchQuery) {
@@ -408,7 +403,6 @@ public class ResidentForm {
             JOptionPane.showMessageDialog(frame, "Error deleting resident: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
 
 		    
     private void updateResidentInDatabase(int residentId, String firstName, String middleName, String lastName, String suffix,
