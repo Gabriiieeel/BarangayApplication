@@ -2,7 +2,9 @@ package system.BarrioSeguro;
 
 public class BarrioSeguro {
 
-    public BarrioSeguro() {}
+    public BarrioSeguro() {
+        
+    }
 
     protected void startApplication() {
         LoginForm loginScreen = new LoginForm(BarrioSeguro.this);

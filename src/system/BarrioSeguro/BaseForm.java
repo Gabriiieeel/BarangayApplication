@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -30,12 +31,11 @@ public abstract class BaseForm extends JFrame {
 
     protected static final String DATABASE_PATH = "jdbc:ucanaccess://Database/BarrioSeguroDB.accdb";
 
+    protected BarrioSeguro appController;
+
     protected final Color DEFAULT_COLOR = new Color(220, 20, 60);
     protected final Color CLICK_COLOR = new Color(180, 0, 40);
     protected final Color HOVER_COLOR = new Color(200, 0, 50);
-
-
-    protected BarrioSeguro appController;
 
     public BaseForm(BarrioSeguro accessAppControl) {
         appController = accessAppControl;
@@ -44,6 +44,18 @@ public abstract class BaseForm extends JFrame {
         setBounds(100, 100, 1440, 1024);
         setResizable(false);
         setLocationRelativeTo(null);
+        
+        setApplicationIcon();
+    }
+
+    private void setApplicationIcon() {
+        File iconFile = new File("Visuals/logoIcon.png");
+        if (iconFile.exists()) {
+            ImageIcon appIcon = new ImageIcon(iconFile.getAbsolutePath());
+            setIconImage(appIcon.getImage());
+        } else {
+            System.err.println("Error: Window icon not found at " + iconFile.getAbsolutePath());
+        }
     }
 
     protected Connection getConnection() throws SQLException {
