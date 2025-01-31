@@ -1,0 +1,6 @@
+{
+  "java.project.referencedLibraries": [
+      "jarfiles/**/*.jar"
+  ],
+  "editor.tabSize": 2
+}
