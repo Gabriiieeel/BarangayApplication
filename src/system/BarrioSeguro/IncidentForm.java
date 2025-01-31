@@ -212,7 +212,7 @@ public class IncidentForm extends BaseForm {
         JButton submitbtn = new JButton("Submit");
         submitbtn.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         submitbtn.setBounds(378, 529, 150, 55);
-        submitbtn.addActionListener(_ -> submitIncident());
+        submitbtn.addActionListener(eventForSubmitBtn -> submitIncident());
         incidentPanel.add(submitbtn);
     }
     
