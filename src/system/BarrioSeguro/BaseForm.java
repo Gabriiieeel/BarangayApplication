@@ -5,9 +5,12 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,10 +18,13 @@ import java.sql.SQLException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+
+import javax.swing.plaf.basic.BasicButtonUI;
 
 public abstract class BaseForm extends JFrame {
 
@@ -84,8 +90,13 @@ public abstract class BaseForm extends JFrame {
     }
 
     private void addDashboardButtons(JPanel dashboardPanel) {
+        Color defaultColor = new Color(220, 20, 60);  // Light grey default color
+        Color clickColor = new Color(180, 0, 40);    // Darker grey when clicked
+        Color hoverColor = new Color(200, 0, 50);    // Prevents white highlight
 
         JButton announceBtn = new JButton("Announcement");
+        styleButton(announceBtn, defaultColor, clickColor, hoverColor);
+        announceBtn.setBounds(0, 250, 430, 78);
         announceBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForAnnounceBtn) {
                 EventQueue.invokeLater(new Runnable() {
@@ -100,12 +111,12 @@ public abstract class BaseForm extends JFrame {
                 });
             }
         });
-        announceBtn.setFont(new Font("Times New Roman", Font.PLAIN, 25));
-        announceBtn.setBounds(0, 250, 430, 78);
         dashboardPanel.add(announceBtn);
 
 
         JButton residentBtn = new JButton("Resident Database");
+        styleButton(residentBtn, defaultColor, clickColor, hoverColor);
+        residentBtn.setBounds(0, 371, 430, 78);
         residentBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForResidentBtn) {
                 EventQueue.invokeLater(new Runnable() {
@@ -120,12 +131,12 @@ public abstract class BaseForm extends JFrame {
                 });
             }
         });
-        residentBtn.setFont(new Font("Times New Roman", Font.PLAIN, 25));
-        residentBtn.setBounds(0, 371, 430, 78);
         dashboardPanel.add(residentBtn);
 
 
         JButton incidentBtn = new JButton("Incident Reports");
+        styleButton(incidentBtn, defaultColor, clickColor, hoverColor);
+        incidentBtn.setBounds(0, 489, 430, 78);
         incidentBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForIncidentBtn) {
                 EventQueue.invokeLater(new Runnable() {
@@ -140,12 +151,12 @@ public abstract class BaseForm extends JFrame {
                 });
             }
         });
-        incidentBtn.setFont(new Font("Times New Roman", Font.PLAIN, 25));
-        incidentBtn.setBounds(0, 489, 430, 78);
         dashboardPanel.add(incidentBtn);
 
 
         JButton summaryBtn = new JButton("Summary Reports");
+        styleButton(summaryBtn, defaultColor, clickColor, hoverColor);
+        summaryBtn.setBounds(0, 611, 430, 78);
         summaryBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForSummaryBtn) {
                 EventQueue.invokeLater(new Runnable() {
@@ -160,12 +171,12 @@ public abstract class BaseForm extends JFrame {
                 });
             }
         });
-        summaryBtn.setFont(new Font("Times New Roman", Font.PLAIN, 25));
-        summaryBtn.setBounds(0, 611, 430, 78);
         dashboardPanel.add(summaryBtn);
 
 
         JButton logoutBtn = new JButton("Log Out");
+        styleRoundedButton(logoutBtn, defaultColor, clickColor, hoverColor);
+        logoutBtn.setBounds(135, 805, 150, 55);
         logoutBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForSummaryBtn) {
                 dispose();
@@ -175,9 +186,72 @@ public abstract class BaseForm extends JFrame {
                 });
             }
         });
-        logoutBtn.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-        logoutBtn.setBounds(135, 805, 150, 55);
         dashboardPanel.add(logoutBtn);
+    }
+
+    private void styleButton(JButton button, Color defaultColor, Color clickColor, Color hoverColor) {
+        button.setFont(new Font("Times New Roman", Font.PLAIN, 25));
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        button.setContentAreaFilled(false);
+        button.setOpaque(true);
+        button.setForeground(Color.WHITE);
+        button.setBackground(defaultColor);
+
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent eventButtonPress) {
+                button.setBackground(clickColor);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent eventButtonRelease) {
+                button.setBackground(defaultColor);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent eventButtonEnter) {
+                button.setBackground(hoverColor);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent eventButtonExit) {
+                button.setBackground(defaultColor);
+            }
+        });
+    }
+
+    private void styleRoundedButton(JButton button, Color defaultColor, Color clickColor, Color hoverColor) {
+        styleButton(button, defaultColor, clickColor, hoverColor);
+        button.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        button.setOpaque(false);
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+    
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent eventButtonPress) {
+                button.setBackground(clickColor);
+            }
+    
+            @Override
+            public void mouseReleased(MouseEvent eventButtonRelease) {
+                button.setBackground(defaultColor);
+            }
+        });
+    
+        button.setUI(new BasicButtonUI() {
+            @Override
+            public void paint(Graphics paintGraphics, JComponent paintComponent) {
+                Graphics2D paintGraphics2D = (Graphics2D) paintGraphics.create();
+                paintGraphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                paintGraphics2D.setColor(button.getBackground());
+                paintGraphics2D.fillRoundRect(0, 0, paintComponent.getWidth(), paintComponent.getHeight(), 30, 30);
+                paintGraphics2D.dispose();
+                super.paint(paintGraphics, paintComponent);
+            }
+        });
     }
 
     private void logoutAndGoToLogin() {
