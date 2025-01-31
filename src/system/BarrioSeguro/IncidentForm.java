@@ -58,6 +58,7 @@ public class IncidentForm extends BaseForm {
         addIncidentPanel(incidentPane);
     }
 
+    @SuppressWarnings("unused")
     private void addIncidentPanel(JLayeredPane incidentPane) {
         JPanel incidentPanel = new JPanel() {
             @Override
