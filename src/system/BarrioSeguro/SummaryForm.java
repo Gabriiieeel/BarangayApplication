@@ -159,6 +159,12 @@ public class SummaryForm extends BaseForm {
         viewBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForViewBtn) {
                 int selectedRow = incidentTable.getSelectedRow();
+
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(null, "Please select an incident row to view.", "No Selection", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
                 if (selectedRow != -1) {
                     String firstName = (String) incidentTable.getValueAt(selectedRow, 0);
                     String lastName = (String) incidentTable.getValueAt(selectedRow, 1);
