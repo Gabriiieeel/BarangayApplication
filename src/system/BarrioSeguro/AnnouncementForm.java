@@ -151,7 +151,7 @@ public class AnnouncementForm extends BaseForm {
                 sendEmail(subject, messageContent);
             }
         });
-        emailBtn.setBounds(569, 497, 177, 55);
+        emailBtn.setBounds(555, 497, 177, 55);
         announcePanel.add(emailBtn);
         
         JButton smsBtn = new JButton("Send to SMS");
@@ -164,7 +164,7 @@ public class AnnouncementForm extends BaseForm {
                 sendSMS(subject, messageContent);
             }
         });
-        smsBtn.setBounds(181, 497, 177, 55);
+        smsBtn.setBounds(167, 497, 177, 55);
         announcePanel.add(smsBtn);
     }
 

@@ -212,7 +212,7 @@ public class IncidentForm extends BaseForm {
         
         JButton submitbtn = new JButton("Submit");
         styleRoundedButton(submitbtn);
-        submitbtn.setBounds(378, 529, 150, 55);
+        submitbtn.setBounds(363, 529, 150, 55);
         submitbtn.addActionListener(eventForSubmitBtn -> submitIncident());
         incidentPanel.add(submitbtn);
     }

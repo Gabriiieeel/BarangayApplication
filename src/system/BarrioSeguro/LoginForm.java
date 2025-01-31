@@ -60,7 +60,7 @@ public class LoginForm extends BaseForm {
     private void addLogoImage(JPanel loginPanel) {
         ImageIcon logoImage = new ImageIcon("Visuals/logoIcon.png");
         JLabel imageLabel = new JLabel(logoImage);
-        imageLabel.setBounds(97, 30, 151, 151);
+        imageLabel.setBounds(120, 30, 151, 151);
         loginPanel.add(imageLabel);
     }
 
@@ -68,7 +68,7 @@ public class LoginForm extends BaseForm {
         JLabel textLabel = new JLabel("BarrioSeguro");
         textLabel.setForeground(Color.WHITE);
         textLabel.setFont(new Font("Times New Roman", Font.BOLD, 45));
-        textLabel.setBounds(260, 61, 265, 88);
+        textLabel.setBounds(280, 61, 265, 88);
         loginPanel.add(textLabel);
     }
 
@@ -92,7 +92,7 @@ public class LoginForm extends BaseForm {
         JLabel adminTextLabel = new JLabel("ADMINISTRATOR");
         adminTextLabel.setForeground(Color.WHITE);
         adminTextLabel.setFont(new Font("Times New Roman", Font.BOLD, 41));
-        adminTextLabel.setBounds(108, 24, 375, 88);
+        adminTextLabel.setBounds(100, 24, 375, 88);
         adminPanel.add(adminTextLabel);
 
         JLabel idNumberTextLabel = new JLabel("Enter ID Number");

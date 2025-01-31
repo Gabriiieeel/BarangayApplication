@@ -192,7 +192,7 @@ public class SummaryForm extends BaseForm {
             }
         });
         viewBtn.setFont(new Font("Times New Roman", Font.BOLD, 14));
-        viewBtn.setBounds(326, 664, 160, 37);
+        viewBtn.setBounds(361, 664, 160, 37);
         summaryPanel.add(viewBtn);
     }
     

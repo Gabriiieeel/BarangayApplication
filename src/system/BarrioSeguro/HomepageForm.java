@@ -51,18 +51,18 @@ public class HomepageForm extends BaseForm {
         lblWelcome.setHorizontalAlignment(SwingConstants.CENTER);
         lblWelcome.setForeground(Color.WHITE);
         lblWelcome.setFont(new Font("Times New Roman", Font.BOLD, 47));
-        lblWelcome.setBounds(328, 25, 272, 106);
+        lblWelcome.setBounds(305, 25, 272, 106);
         welcomePanel.add(lblWelcome);
         
         JLabel logoLabel = new JLabel(new ImageIcon("Visuals/databaseLogoIcon.png"));
-        logoLabel.setBounds(191, 123, 551, 529);
+        logoLabel.setBounds(166, 123, 551, 529);
         welcomePanel.add(logoLabel);
         
         JLabel lblBrgyMonitorIncidentReport = new JLabel("Barangay Monitoring and Incident Reporting System");
         lblBrgyMonitorIncidentReport.setHorizontalAlignment(SwingConstants.CENTER);
         lblBrgyMonitorIncidentReport.setForeground(Color.WHITE);
         lblBrgyMonitorIncidentReport.setFont(new Font("Times New Roman", Font.BOLD, 27));
-        lblBrgyMonitorIncidentReport.setBounds(98, 619, 752, 92);
+        lblBrgyMonitorIncidentReport.setBounds(73, 619, 752, 92);
         welcomePanel.add(lblBrgyMonitorIncidentReport);
     }
 }

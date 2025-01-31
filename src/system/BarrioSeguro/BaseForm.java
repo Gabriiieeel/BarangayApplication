@@ -94,7 +94,7 @@ public abstract class BaseForm extends JFrame {
     private void addLogoToDashboard(JPanel dashboardPanel) {
         ImageIcon logoImage = new ImageIcon("Visuals/logoIcon.png");
         JLabel logoLabel = new JLabel(logoImage);
-        logoLabel.setBounds(10, 33, 150, 150); 
+        logoLabel.setBounds(18, 33, 150, 150); 
         dashboardPanel.setLayout(null);
         dashboardPanel.add(logoLabel);
     }
@@ -103,7 +103,7 @@ public abstract class BaseForm extends JFrame {
         JLabel logonamelabel = new JLabel("BarrioSeguro");
         logonamelabel.setForeground(Color.WHITE);
         logonamelabel.setFont(new Font("Times New Roman", Font.BOLD, 39)); 
-        logonamelabel.setBounds(170, 69, 237, 78);
+        logonamelabel.setBounds(178, 69, 237, 78);
         dashboardPanel.add(logonamelabel);
     }
 
