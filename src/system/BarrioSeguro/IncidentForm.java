@@ -79,7 +79,7 @@ public class IncidentForm extends BaseForm {
         incidentFirstName = new JTextField("");
         incidentFirstName.setToolTipText("");
         incidentFirstName.setHorizontalAlignment(SwingConstants.LEFT);
-        incidentFirstName.setForeground(new Color(0, 0, 0));
+        incidentFirstName.setBackground(new Color(255, 244, 244));
         incidentFirstName.setFont(new Font("SansSerif", Font.PLAIN, 12));
         incidentFirstName.setBorder(new EmptyBorder(10, 10, 10, 10));
         incidentFirstName.setBounds(40, 80, 216, 36);
@@ -89,7 +89,7 @@ public class IncidentForm extends BaseForm {
         incidentMidName = new JTextField("");
         incidentMidName.setToolTipText("");
         incidentMidName.setHorizontalAlignment(SwingConstants.LEFT);
-        incidentMidName.setForeground(new Color(0, 0, 0));
+        incidentMidName.setBackground(new Color(255, 244, 244));
         incidentMidName.setFont(new Font("SansSerif", Font.PLAIN, 12));
         incidentMidName.setBorder(new EmptyBorder(10, 10, 10, 10));
         incidentMidName.setBounds(40, 142, 216, 36);
@@ -98,7 +98,7 @@ public class IncidentForm extends BaseForm {
         incidentLastName = new JTextField("");
         incidentLastName.setToolTipText("");
         incidentLastName.setHorizontalAlignment(SwingConstants.LEFT);
-        incidentLastName.setForeground(new Color(0, 0, 0));
+        incidentLastName.setBackground(new Color(255, 244, 244));
         incidentLastName.setFont(new Font("SansSerif", Font.PLAIN, 12));
         incidentLastName.setBorder(new EmptyBorder(10, 10, 10, 10));
         incidentLastName.setBounds(40, 204, 216, 36);
@@ -107,7 +107,7 @@ public class IncidentForm extends BaseForm {
         incidentSuffixName = new JTextField("");
         incidentSuffixName.setToolTipText("");
         incidentSuffixName.setHorizontalAlignment(SwingConstants.LEFT);
-        incidentSuffixName.setForeground(new Color(0, 0, 0));
+        incidentSuffixName.setBackground(new Color(255, 244, 244));
         incidentSuffixName.setFont(new Font("SansSerif", Font.PLAIN, 12));
         incidentSuffixName.setBorder(new EmptyBorder(10, 10, 10, 10));
         incidentSuffixName.setBounds(40, 266, 216, 36);
@@ -116,34 +116,27 @@ public class IncidentForm extends BaseForm {
         incidentDate = new JTextField("");
         incidentDate.setToolTipText("");
         incidentDate.setHorizontalAlignment(SwingConstants.LEFT);
-        incidentDate.setForeground(new Color(0, 0, 0));
+        incidentDate.setBackground(new Color(255, 244, 244));
         incidentDate.setFont(new Font("SansSerif", Font.PLAIN, 12));
         incidentDate.setBorder(new EmptyBorder(10, 10, 10, 10));
         incidentDate.setBounds(40, 328, 216, 36);
         incidentPanel.add(incidentDate);
         
         incidentType = new JComboBox<String>();
+        incidentType.setBackground(new Color(255, 244, 244));
         incidentType.setModel(new DefaultComboBoxModel<String>(new String[] {"Assault", "Burglary", "Domestic Violence", "Drug Possession", "Fraud", "Harassment", "Physical Abuse", "Theft", "Traffic Violation", "Vandalism", "Arson", "Robbery", "Homicide", "Kidnapping", "Shoplifting", "Identity Theft", "Embezzlement", "Money Laundering", "Stalking", "Sexual Assault", "Child Abuse", "Human Trafficking", "Battery", "Bribery", "Extortion", "Counterfeiting", "Piracy", "Public Intoxication", "Rape", "Prostitution", "Weapons Possession", "Animal Cruelty", "Blackmail", "Tax Evasion", "Illegal Gambling", "Wire Fraud", "Trespassing", "Insurance Fraud", "Unlawful Detention", "Obstruction of Justice", "Racketeering", "Manslaughter", "Money Counterfeiting", "Corruption", "Illegal Search and Seizure", "Forgery", "Drug Trafficking", "Terrorism", "Public Disorder", "Bribing a Witness", "Reckless Driving", "Destruction of Property", "Coercion"}));
         incidentType.setBounds(40, 390, 216, 36);
         incidentPanel.add(incidentType);
         
         incidentProgress = new JComboBox<String>();
+        incidentProgress.setBackground(new Color(255, 244, 244));
         incidentProgress.setModel(new DefaultComboBoxModel<String>(new String[] {"Under Investigation", "Ongoing", "Resolved", "Closed"}));
         incidentProgress.setBounds(40, 452, 216, 36);
         incidentPanel.add(incidentProgress);
         
-        incidentDescription = new JTextArea("Enter a message...") {
-            @Override
-            protected void paintComponent(Graphics paintGraphics) {
-                super.paintComponent(paintGraphics);
-                if (getText().isEmpty() && getForeground() == Color.LIGHT_GRAY) {
-                    paintGraphics.setColor(getForeground());
-                    paintGraphics.drawString("Enter a message...", 10, 20);
-                }
-            }
-        };
+        incidentDescription = createRoundedTextArea("Enter a message...", 583, 423);
+        incidentDescription.setForeground(Color.BLACK);
         incidentDescription.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        incidentDescription.setForeground(new Color(0, 0, 0));
         incidentDescription.setWrapStyleWord(true);
         incidentDescription.setBounds(273, 65, 583, 423);
         incidentDescription.setLineWrap(true);

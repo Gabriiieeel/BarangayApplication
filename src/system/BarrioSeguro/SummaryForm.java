@@ -1,6 +1,7 @@
 package system.BarrioSeguro;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -23,7 +24,9 @@ import java.text.SimpleDateFormat;
 
 import java.util.Date;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -34,7 +37,7 @@ import javax.swing.RowFilter;
 import javax.swing.SwingConstants;
 
 import javax.swing.border.EmptyBorder;
-
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -91,6 +94,21 @@ public class SummaryForm extends BaseForm {
         };
 
         DefaultTableModel summaryTableModel = new DefaultTableModel(null, columnNames);
+
+        incidentTable.getTableHeader().setDefaultRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                JLabel headerLabel = new JLabel(value.toString());
+                headerLabel.setOpaque(true);
+                headerLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+                headerLabel.setBackground(new Color(255, 104, 101));
+                headerLabel.setForeground(Color.BLACK);
+                headerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                headerLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+                return headerLabel;
+            }
+        });
+
         incidentTable.setModel(summaryTableModel);
 
         JScrollPane scrollSummaryTable = new JScrollPane(incidentTable);
@@ -102,7 +120,7 @@ public class SummaryForm extends BaseForm {
         incidentTable.getColumnModel().getColumn(2).setPreferredWidth(150);
         incidentTable.getColumnModel().getColumn(3).setPreferredWidth(150);
 
-        searchTextField = new JTextField("Search"); 
+        searchTextField = createRoundedTextField("Search", 25);
         searchTextField.setToolTipText("");
         searchTextField.setHorizontalAlignment(SwingConstants.LEFT);
         searchTextField.setForeground(Color.LIGHT_GRAY);
