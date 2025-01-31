@@ -26,6 +26,8 @@ import javax.swing.JPanel;
 
 import javax.swing.plaf.basic.BasicButtonUI;
 
+import system.BarrioSeguro.BarrioSeguro;
+
 public abstract class BaseForm extends JFrame {
 
     protected static final String DATABASE_PATH = "jdbc:ucanaccess://Database/BarrioSeguroDB.accdb";

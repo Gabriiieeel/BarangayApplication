@@ -69,7 +69,7 @@ public class AnnouncementForm extends BaseForm {
             }
         };
         announcePanel.setBounds(480, 185, 895, 640);
-        announcePanel.setBackground(new Color(102, 77, 77, 178)); 
+        announcePanel.setBackground(new Color(102, 77, 77, 178));  // Semi-transparent background
         announcePanel.setLayout(null);
         announcePanel.setOpaque(false);
 
@@ -102,7 +102,7 @@ public class AnnouncementForm extends BaseForm {
         });
 
         announcePanel.add(subjectTextField);
-
+     // Message input field with placeholder functionality
         messageTextField = new JTextArea("Enter a message...") {
             @Override
             protected void paintComponent(Graphics paintGraphics) {
@@ -140,35 +140,51 @@ public class AnnouncementForm extends BaseForm {
         });
 
         announcePanel.add(messageTextField);
-
+        // Button to send email
         JButton emailBtn = new JButton("Send to Email");
         styleRoundedButton(emailBtn);
         emailBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForEmailBtn) {
-                String subject = subjectTextField.getText();
-                String messageContent = messageTextField.getText();
-
-                sendEmail(subject, messageContent);
+                if (validateFields()) {
+                    String subject = subjectTextField.getText();
+                    String messageContent = messageTextField.getText();
+                    sendEmail(subject, messageContent);
+                }
             }
         });
         emailBtn.setBounds(569, 497, 177, 55);
         announcePanel.add(emailBtn);
-        
+     // Button to send SMS (Not implemented, placeholder only)
         JButton smsBtn = new JButton("Send to SMS");
         styleRoundedButton(smsBtn);
         smsBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForSMSbtn) {
-                String subject = subjectTextField.getText();
-                String messageContent = messageTextField.getText();
-
-                sendSMS(subject, messageContent);
+                if (validateFields()) {
+                    String subject = subjectTextField.getText();
+                    String messageContent = messageTextField.getText();
+                    sendSMS(subject, messageContent);
+                }
             }
         });
         smsBtn.setBounds(181, 497, 177, 55);
         announcePanel.add(smsBtn);
     }
 
+    private boolean validateFields() {
+    	// Ensures fields are not empty before sending email or SMS
+        if (subjectTextField.getText().equals("Subject") || subjectTextField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Subject is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (messageTextField.getText().equals("Enter a message...") || messageTextField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Message is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
     private void sendEmail(String subject, String messageContent) {
+    	// Sends email to all residents using stored emails from the database
         final String username = "gabdelacruz926@gmail.com";
         final String password = "wnvmmbowuvxtbbvr";
 
@@ -217,7 +233,6 @@ public class AnnouncementForm extends BaseForm {
             resultSendEmail.close();
             statementSendEmail.close();
             connectSendEmail.close();
-
             JOptionPane.showMessageDialog(AnnouncementForm.this, "Emails sent successfully!");
 
         } catch (Exception handleEmailException) {

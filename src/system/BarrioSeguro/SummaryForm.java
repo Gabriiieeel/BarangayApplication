@@ -41,7 +41,7 @@ import javax.swing.table.TableRowSorter;
 public class SummaryForm extends BaseForm {
 
     private JTable incidentTable;
-    private JTextField searchTextField;
+    private JTextField searchTextField; // for search function
 
     public SummaryForm(BarrioSeguro appController) {
         super(appController);
@@ -79,14 +79,14 @@ public class SummaryForm extends BaseForm {
 
         incidentTable = new JTable() {
             @Override
-            public boolean isCellEditable(int row, int column) {
+            public boolean isCellEditable(int row, int column) {//make cell not clickable and not editable
                 return false;
             }
         };
         incidentTable.setBounds(36, 38, 826, 581);
         summaryPanel.add(incidentTable);
 
-        String[] columnNames = {
+        String[] columnNames = {//create 4 columns
             "First Name", "Last Name", "Date", "Progress"
         };
 
@@ -135,19 +135,19 @@ public class SummaryForm extends BaseForm {
             }
         });
         summaryPanel.add(searchTextField);
-        
+        //view btn
         JButton viewBtn = new JButton("VIEW");
         styleRoundedButton(viewBtn);
-        viewBtn.addActionListener(new ActionListener() {
+        viewBtn.addActionListener(new ActionListener() {//actionlistner when viewbtn is clicked
             public void actionPerformed(ActionEvent eventForViewBtn) {
-                int selectedRow = incidentTable.getSelectedRow();
+                int selectedRow = incidentTable.getSelectedRow();//select row 
                 if (selectedRow != -1) {
                     String firstName = (String) incidentTable.getValueAt(selectedRow, 0);
                     String lastName = (String) incidentTable.getValueAt(selectedRow, 1);
                     String dateString = (String) incidentTable.getValueAt(selectedRow, 2); 
                     String progress = (String) incidentTable.getValueAt(selectedRow, 3);
 
-                    SimpleDateFormat formatDateConverter = new SimpleDateFormat("dd/MM/yyyy");
+                    SimpleDateFormat formatDateConverter = new SimpleDateFormat("dd/MM/yyyy");//convert date for validity
                     java.sql.Date giveDate = null;
                     try {
                         java.util.Date convertedDate = formatDateConverter.parse(dateString);
@@ -160,7 +160,7 @@ public class SummaryForm extends BaseForm {
                     String description = "";
                     String typeOfIncident = "";
 
-                    try (Connection connectSummary = getConnection()) {
+                    try (Connection connectSummary = getConnection()) {//database connection
                         String query = "SELECT incident_description, incident_type FROM IncidentDB " +
                                         "WHERE incident_firstName = ? AND incident_lastName = ? AND incident_date = ?";
 
@@ -183,7 +183,7 @@ public class SummaryForm extends BaseForm {
 
                     IncidentForm createIncidentForm = new IncidentForm(appController);
 
-                    createIncidentForm.fillData(firstName, "", lastName, "", dateString, progress, description, typeOfIncident);
+                    createIncidentForm.fillData(firstName, "", lastName, "", dateString, progress, description, typeOfIncident);//call the filldata function from incidentform
 
                     createIncidentForm.setVisible(true);
 
@@ -196,7 +196,7 @@ public class SummaryForm extends BaseForm {
         summaryPanel.add(viewBtn);
     }
     
-    private void filterTable(String searchQuery) {
+    private void filterTable(String searchQuery) {//function for search
         DefaultTableModel filterTableModel = (DefaultTableModel) incidentTable.getModel();
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(filterTableModel);
         incidentTable.setRowSorter(sorter);
@@ -208,7 +208,7 @@ public class SummaryForm extends BaseForm {
         }
     }
     
-    private void loadIncidentData() {
+    private void loadIncidentData() {//show only the 4 columns in our database(manually picked)
         String query = "SELECT incident_firstName, incident_lastName, incident_date, incident_progress " +
                         "FROM IncidentDB";
         

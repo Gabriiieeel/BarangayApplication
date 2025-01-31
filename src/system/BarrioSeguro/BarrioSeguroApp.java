@@ -2,6 +2,7 @@ package system.BarrioSeguro;
 
 import javax.swing.SwingUtilities;
 
+//MAIN FUNCTION
 public class BarrioSeguroApp {
 
     public static void main(String[] args) {

@@ -33,7 +33,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 public class IncidentForm extends BaseForm {
-
+	//for incident recording
     private JTextField incidentFirstName;
     private JTextField incidentMidName;
     private JTextField incidentLastName;
@@ -58,7 +58,6 @@ public class IncidentForm extends BaseForm {
         addIncidentPanel(incidentPane);
     }
 
-    @SuppressWarnings("unused")
     private void addIncidentPanel(JLayeredPane incidentPane) {
         JPanel incidentPanel = new JPanel() {
             @Override
@@ -143,11 +142,11 @@ public class IncidentForm extends BaseForm {
             }
         };
         incidentDescription.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        incidentDescription.setForeground(new Color(0, 0, 0));
+        incidentDescription.setForeground(Color.LIGHT_GRAY); // Set initial color to light gray
         incidentDescription.setWrapStyleWord(true);
         incidentDescription.setBounds(273, 65, 583, 423);
         incidentDescription.setLineWrap(true);
-        
+
         incidentDescription.setMargin(new Insets(20, 20, 20, 20));
         incidentDescription.addFocusListener(new FocusListener() {
             @Override
@@ -167,6 +166,7 @@ public class IncidentForm extends BaseForm {
             }
         });
         incidentPanel.add(incidentDescription);
+
         
         JLabel lblNewLabel = new JLabel("Enter First Name");
         lblNewLabel.setForeground(new Color(255, 255, 255));
@@ -213,18 +213,31 @@ public class IncidentForm extends BaseForm {
         JButton submitbtn = new JButton("Submit");
         styleRoundedButton(submitbtn);
         submitbtn.setBounds(378, 529, 150, 55);
-        submitbtn.addActionListener(eventForSubmitBtn -> submitIncident());
+        submitbtn.addActionListener(eventForSubmitBtn -> {
+            if (validateIncidentDescription()) {
+                submitIncident();
+            }
+        });
         incidentPanel.add(submitbtn);
     }
     
-    private boolean validateFormFields() {
+ // Function to validate incidentDescription
+    private boolean validateIncidentDescription() {//function for required field
+        if (incidentDescription.getText().equals("Enter a message...") || incidentDescription.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Incident description is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+ // Function to validate formfield
+    private boolean validateFormFields() {//function for required field
         if (incidentFirstName.getText().isEmpty() || incidentLastName.getText().isEmpty() || incidentDate.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "First Name, Last Name, and Date are required fields.");
             return false;
         }
         return true;
     }
-
+    //function for submitbtn
     private void submitIncident() {
         if (!validateFormFields()) {
             return;
@@ -232,7 +245,7 @@ public class IncidentForm extends BaseForm {
 
         try {
             String dateString = incidentDate.getText();
-            SimpleDateFormat formatDateString = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat formatDateString = new SimpleDateFormat("dd/MM/yyyy");//convert date to match the format
             formatDateString.setLenient(false);
 
             Date parsedDate = null;
@@ -245,7 +258,7 @@ public class IncidentForm extends BaseForm {
 
             java.sql.Date convertedSQLdate = new java.sql.Date(parsedDate.getTime());
 
-            try (Connection connectSubmitIncident = getConnection()) {
+            try (Connection connectSubmitIncident = getConnection()) {//call database and call all the rows
                 String checkQuery = "SELECT COUNT(*) FROM IncidentDB WHERE incident_firstName = ? " +
                                     "AND incident_lastName = ? AND incident_date = ?";
                 try (PreparedStatement checkStmt = connectSubmitIncident.prepareStatement(checkQuery)) {
@@ -258,7 +271,7 @@ public class IncidentForm extends BaseForm {
                     int count = resultSubmitIncident.getInt(1);
 
                     if (count > 0) {
-                        String updateQuery = "UPDATE IncidentDB SET incident_midName = ?, incident_suffix = ?, " +
+                        String updateQuery = "UPDATE IncidentDB SET incident_midName = ?, incident_suffix = ?, " + // update after changes
                                             "incident_type = ?, incident_description = ?, incident_progress = ? " +
                                             "WHERE incident_firstName = ? AND incident_lastName = ? AND incident_date = ?";
 
@@ -311,7 +324,7 @@ public class IncidentForm extends BaseForm {
         }
     }
 
-    private void clearFormFields() {
+    private void clearFormFields() {//clear function after successfully inputting incident
         incidentFirstName.setText("");
         incidentMidName.setText("");
         incidentLastName.setText("");
@@ -322,7 +335,7 @@ public class IncidentForm extends BaseForm {
         incidentDescription.setText("Enter a message...");
         incidentDescription.setForeground(Color.LIGHT_GRAY);
     }
-
+    //function for to be used in summaryForm
     public void fillData(String firstName, String middleName, String lastName, String suffix, String date, String progress, String description, String typeOfIncident) {
         incidentFirstName.setText(firstName);       
         incidentMidName.setText(middleName);     
