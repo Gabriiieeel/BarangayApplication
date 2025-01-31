@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Insets;
 import java.awt.RenderingHints;
 
 import java.awt.event.ActionEvent;
@@ -75,10 +74,11 @@ public class AnnouncementForm extends BaseForm {
 
         announcePane.add(announcePanel, JLayeredPane.PALETTE_LAYER);
 
-        subjectTextField = new JTextField("Subject");
+        subjectTextField = createRoundedTextField("Subject", 25);
         subjectTextField.setToolTipText("");
         subjectTextField.setHorizontalAlignment(SwingConstants.LEFT);
-        subjectTextField.setForeground(Color.LIGHT_GRAY);
+        subjectTextField.setForeground(new Color(0,0,0,50));
+        subjectTextField.setBackground(new Color(255, 244, 244));
         subjectTextField.setFont(new Font("SansSerif", Font.PLAIN, 25));
         subjectTextField.setBorder(new EmptyBorder(10, 20, 10, 20));
         subjectTextField.setBounds(51, 50, 798, 53);
@@ -103,41 +103,7 @@ public class AnnouncementForm extends BaseForm {
 
         announcePanel.add(subjectTextField);
 
-        messageTextField = new JTextArea("Enter a message...") {
-            @Override
-            protected void paintComponent(Graphics paintGraphics) {
-                super.paintComponent(paintGraphics);
-                if (getText().isEmpty() && getForeground() == Color.LIGHT_GRAY) {
-                    paintGraphics.setColor(getForeground());
-                    paintGraphics.drawString("Enter a message...", 10, 20); 
-                }
-            }
-        };
-        messageTextField.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        messageTextField.setForeground(Color.LIGHT_GRAY);
-        messageTextField.setBounds(51, 136, 798, 323);
-        messageTextField.setWrapStyleWord(true);
-        messageTextField.setLineWrap(true);
-
-        messageTextField.setMargin(new Insets(20, 20, 20, 20));
-
-        messageTextField.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent eventForMessageField) {
-                if (messageTextField.getText().equals("Enter a message...")) { 
-                    messageTextField.setText("");
-                    messageTextField.setForeground(Color.BLACK);
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent eventForMessageField) {
-                if (messageTextField.getText().isEmpty()) {  
-                    messageTextField.setText("Enter a message..."); 
-                    messageTextField.setForeground(Color.LIGHT_GRAY);  
-                }
-            }
-        });
+        messageTextField = createRoundedTextArea("Enter a message...", 798, 323);
 
         announcePanel.add(messageTextField);
 

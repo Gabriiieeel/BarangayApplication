@@ -5,10 +5,13 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.RenderingHints;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -25,6 +28,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import javax.swing.border.EmptyBorder;
 
 import javax.swing.plaf.basic.BasicButtonUI;
 
@@ -273,4 +280,85 @@ public abstract class BaseForm extends JFrame {
         LoginForm login = new LoginForm(appController);
         login.setVisible(true);
     }
+
+    protected JTextField createRoundedTextField(String text, int cornerRadius) {
+        JTextField textField = new JTextField(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(Color.WHITE); // Background color
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius);
+                super.paintComponent(g);
+                g2.dispose();
+            }
+
+            @Override
+            protected void paintBorder(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(Color.GRAY); // Border color
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, cornerRadius, cornerRadius);
+                g2.dispose();
+            }
+        };
+        textField.setOpaque(false);
+        textField.setBorder(new EmptyBorder(10, 20, 10, 20));
+        return textField;
+    }
+
+    public JTextArea createRoundedTextArea(String placeholder, int width, int height) {
+        JTextArea textArea = new JTextArea(placeholder) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30); // Rounded rectangle
+                g2.dispose();
+
+                super.paintComponent(g);
+            }
+
+            @Override
+            protected void paintBorder(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(Color.GRAY);
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 30, 30);
+                g2.dispose();
+            }
+        };
+
+        textArea.setOpaque(false);
+        textArea.setBackground(new Color(255, 244, 244));
+        textArea.setForeground(new Color(0,0,0,50));
+        textArea.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        textArea.setBorder(new EmptyBorder(20, 20, 20, 20));
+        textArea.setBounds(51, 136, width, height);
+        textArea.setWrapStyleWord(true);
+        textArea.setLineWrap(true);
+        textArea.setMargin(new Insets(20, 20, 20, 20));
+
+        textArea.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (textArea.getText().equals(placeholder)) {
+                    textArea.setText("");
+                    textArea.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (textArea.getText().isEmpty()) {
+                    textArea.setText(placeholder);
+                    textArea.setForeground(Color.LIGHT_GRAY);
+                }
+            }
+        });
+
+        return textArea;
+    }
+
 }
