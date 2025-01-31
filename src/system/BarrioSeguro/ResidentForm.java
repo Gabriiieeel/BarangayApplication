@@ -1,24 +1,29 @@
 package system.BarrioSeguro;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.RenderingHints;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.SQLException;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -36,19 +41,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
-import java.util.Locale;
-
-/**
- * Shows or manages “residents” from your DB.
- * Centralizes repeated logic in BaseForm if needed.
- */
 public class ResidentForm extends BaseForm {
 
-    private JTable res_tbl;
-    private JTextField searchtf;
+    private JTable residentTable;
+    private JTextField searchTextField;
 
     public ResidentForm(BarrioSeguro appController) {
         super(appController);
@@ -58,436 +54,404 @@ public class ResidentForm extends BaseForm {
     }
 
     private void initialize() {
-        JLayeredPane layeredPane = new JLayeredPane();
-        setContentPane(layeredPane);
+        JLayeredPane residentPane = new JLayeredPane();
+        setContentPane(residentPane);
 
-        addBackgroundImage(layeredPane);
-
-        addDashboardPanel(layeredPane);
-
-        addWelcomePanel(layeredPane);
-      }
-
-      private void addResidentToDatabase(String firstName, String middleName, String lastName, String suffix,
-                String address, String dob, String contact, String email) {
-    String query = "INSERT INTO ResidentDB (resident_firstName, resident_midName, resident_lastName, resident_suffix, " +
-    "resident_address, resident_DoB, resident_contactNo, resident_email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    
-    try (Connection connection = getConnection();
-    PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-    
-    // Convert DOB to a java.sql.Date object
-    java.sql.Date sqlDate = convertToDate(dob);
-    
-    preparedStatement.setString(1, firstName);
-    preparedStatement.setString(2, middleName.isEmpty() ? null : middleName);
-    preparedStatement.setString(3, lastName);
-    preparedStatement.setString(4, suffix.isEmpty() ? null : suffix);
-    preparedStatement.setString(5, address);
-    preparedStatement.setDate(6, sqlDate); // Pass the formatted Date object
-    preparedStatement.setString(7, contact);
-    preparedStatement.setString(8, email);
-    
-    int rowsInserted = preparedStatement.executeUpdate();
-    if (rowsInserted > 0) {
-    JOptionPane.showMessageDialog(this, "Resident added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-    loadResidentData(); // Reload the table data
+        addBackgroundImage(residentPane);
+        addDashboardPanel(residentPane);
+        addResidentPanel(residentPane);
     }
-    } catch (ParseException e) {
-    JOptionPane.showMessageDialog(this, "Invalid Date of Birth format. Please use dd/MM/yyyy.", "Date Format Error", JOptionPane.ERROR_MESSAGE);
-    } catch (SQLException e) {
-    e.printStackTrace();
-    JOptionPane.showMessageDialog(this, "Error adding resident: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
-    }
+
+    private void addResidentToDatabase(String firstName, String middleName, String lastName, String suffix, String address, String dateOfBirth, String contact, String email) {
+        String query = "INSERT INTO ResidentDB (resident_firstName, resident_midName, resident_lastName, resident_suffix, resident_address, resident_DoB, resident_contactNo, resident_email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        try (
+            Connection connectAddResident = getConnection();
+            PreparedStatement prepareAddResident = connectAddResident.prepareStatement(query)
+        ) {
+            java.sql.Date convertSQLdate = convertToDate(dateOfBirth);
+            
+            prepareAddResident.setString(1, firstName);
+            prepareAddResident.setString(2, middleName.isEmpty() ? null : middleName);
+            prepareAddResident.setString(3, lastName);
+            prepareAddResident.setString(4, suffix.isEmpty() ? null : suffix);
+            prepareAddResident.setString(5, address);
+            prepareAddResident.setDate(6, convertSQLdate);
+            prepareAddResident.setString(7, contact);
+            prepareAddResident.setString(8, email);
+            
+            int rowsInserted = prepareAddResident.executeUpdate();
+            if (rowsInserted > 0) {
+                JOptionPane.showMessageDialog(ResidentForm.this, "Resident added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                loadResidentData();
+            }
+        } catch (ParseException handleParseAddResident) {
+            JOptionPane.showMessageDialog(ResidentForm.this, "Invalid Date of Birth format. Please use dd/MM/yyyy.", "Date Format Error", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException handleDatabaseAddResident) {
+            handleDatabaseAddResident.printStackTrace();
+            JOptionPane.showMessageDialog(ResidentForm.this, "Error adding resident: " + handleDatabaseAddResident.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
     
-    //Helper method to convert a String to java.sql.Date
-    private java.sql.Date convertToDate(String dob) throws ParseException {
-    SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-    java.util.Date parsedDate = inputFormat.parse(dob);
-    return new java.sql.Date(parsedDate.getTime()); // Convert to java.sql.Date
+    private java.sql.Date convertToDate(String dateOfBirth) throws ParseException {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+        java.util.Date parsedDate = inputFormat.parse(dateOfBirth);
+        return new java.sql.Date(parsedDate.getTime());
     }
         
-  private void addWelcomePanel(JLayeredPane layeredPane) {
+    private void addResidentPanel(JLayeredPane residentPane) {
+        JPanel addingResidentPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics paintGraphics) {
+                super.paintComponent(paintGraphics);
+                Graphics2D paintGraphicsWith2D = (Graphics2D) paintGraphics;
+                paintGraphicsWith2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                paintGraphicsWith2D.setColor(getBackground());
+                paintGraphicsWith2D.fillRoundRect(0, 0, getWidth(), getHeight(), 75, 75);
+            }
+        };
+        addingResidentPanel.setBounds(480, 185, 895, 722);
+        addingResidentPanel.setBackground(new Color(102, 77, 77, 178)); 
+        addingResidentPanel.setLayout(null);
+        addingResidentPanel.setOpaque(false);
 
-      JPanel welcomePanel = new JPanel() {
-          @Override
-          protected void paintComponent(Graphics g) {
-              super.paintComponent(g);
-              Graphics2D g2d = (Graphics2D) g;
-              g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-              g2d.setColor(getBackground());
-              g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 75, 75);
-          }
-      };
-      welcomePanel.setBounds(480, 185, 895, 722);
-      welcomePanel.setBackground(new Color(102, 77, 77, 178)); 
-      welcomePanel.setLayout(null);
-      welcomePanel.setOpaque(false);
+        residentPane.add(addingResidentPanel, JLayeredPane.PALETTE_LAYER);
+        
+        residentTable = new JTable();
+        JScrollPane scrollResidentTable = new JScrollPane(residentTable);
+        scrollResidentTable.setBounds(22, 93, 848, 483);
+        addingResidentPanel.add(scrollResidentTable);;
+        
+        searchTextField = new JTextField("Search");
+        searchTextField.setToolTipText("");
+        searchTextField.setHorizontalAlignment(SwingConstants.LEFT);
+        searchTextField.setForeground(Color.LIGHT_GRAY);
+        searchTextField.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        searchTextField.setBorder(new EmptyBorder(10, 10, 10, 10));
+        searchTextField.setBounds(22, 45, 216, 37);
+        
+        searchTextField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent eventForSearchField) {
+                if (searchTextField.getText().equals("Search")) {
+                    searchTextField.setText("");
+                    searchTextField.setForeground(Color.BLACK);
+                }
+            }
 
-      layeredPane.add(welcomePanel, JLayeredPane.PALETTE_LAYER);
-      
-      res_tbl = new JTable();
-      JScrollPane scrollPane = new JScrollPane(res_tbl);
-      scrollPane.setBounds(22, 93, 848, 483);
-      welcomePanel.add(scrollPane);;
-      
-      searchtf = new JTextField("Search"); 
-      searchtf.setToolTipText("");
-      searchtf.setHorizontalAlignment(SwingConstants.LEFT);
-      searchtf.setForeground(Color.LIGHT_GRAY);
-      searchtf.setFont(new Font("SansSerif", Font.PLAIN, 12));
-      searchtf.setBorder(new EmptyBorder(10, 10, 10, 10));
-      searchtf.setBounds(22, 45, 216, 37);
-      
-      searchtf.addFocusListener(new FocusListener() {
-          @Override
-          public void focusGained(FocusEvent e) {
-              if (searchtf.getText().equals("Search")) {
-                  searchtf.setText(""); 
-                  searchtf.setForeground(Color.BLACK); 
-              }
-          }
+            @Override
+            public void focusLost(FocusEvent eventForSearchField) {
+                if (searchTextField.getText().isEmpty()) {
+                    searchTextField.setText("Search");
+                    searchTextField.setForeground(Color.LIGHT_GRAY);
+                }
+            }
+        });
+        searchTextField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent eventKeyForSearchField) {
+                String searchQuery = searchTextField.getText().trim().toLowerCase();
+                filterTable(searchQuery);
+            }
+        });
 
-          @Override
-          public void focusLost(FocusEvent e) {
-              if (searchtf.getText().isEmpty()) { 
-                  searchtf.setText("Search"); 
-                  searchtf.setForeground(Color.LIGHT_GRAY);
-              }
-          }
-      });
-      searchtf.addKeyListener(new KeyAdapter() {
-          @Override
-          public void keyReleased(KeyEvent e) {
-              String searchQuery = searchtf.getText().trim().toLowerCase(); // Get the search query and convert to lowercase
-              filterTable(searchQuery); // Call the method to filter the table
-          }
-      });
+        addingResidentPanel.add(searchTextField);
 
-      welcomePanel.add(searchtf);
-      
-      welcomePanel.add(searchtf);
-      
-      JButton btnAdd = new JButton("Add");
-      btnAdd.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-              // Create a custom dialog for input
-              JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
-              panel.add(new JLabel("First Name:"));
-              JTextField firstNameField = new JTextField();
-              panel.add(firstNameField);
+        JButton btnAdd = new JButton("Add");
+        btnAdd.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent eventForAddBtn) {
+                JPanel addResidentInfoPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+                addResidentInfoPanel.add(new JLabel("First Name:"));
+                JTextField firstNameField = new JTextField();
+                addResidentInfoPanel.add(firstNameField);
 
-              panel.add(new JLabel("Middle Name (Optional):"));
-              JTextField middleNameField = new JTextField();
-              panel.add(middleNameField);
+                addResidentInfoPanel.add(new JLabel("Middle Name (Optional):"));
+                JTextField middleNameField = new JTextField();
+                addResidentInfoPanel.add(middleNameField);
 
-              panel.add(new JLabel("Last Name:"));
-              JTextField lastNameField = new JTextField();
-              panel.add(lastNameField);
+                addResidentInfoPanel.add(new JLabel("Last Name:"));
+                JTextField lastNameField = new JTextField();
+                addResidentInfoPanel.add(lastNameField);
 
-              panel.add(new JLabel("Suffix (Optional):"));
-              JTextField suffixField = new JTextField();
-              panel.add(suffixField);
+                addResidentInfoPanel.add(new JLabel("Suffix (Optional):"));
+                JTextField suffixField = new JTextField();
+                addResidentInfoPanel.add(suffixField);
 
-              panel.add(new JLabel("Address:"));
-              JTextField addressField = new JTextField();
-              panel.add(addressField);
+                addResidentInfoPanel.add(new JLabel("Address:"));
+                JTextField addressField = new JTextField();
+                addResidentInfoPanel.add(addressField);
 
-              panel.add(new JLabel("Date of Birth (dd/mm/yyyy):"));
-              JTextField dobField = new JTextField();
-              panel.add(dobField);
+                addResidentInfoPanel.add(new JLabel("Date of Birth (dd/mm/yyyy):"));
+                JTextField dobField = new JTextField();
+                addResidentInfoPanel.add(dobField);
 
-              panel.add(new JLabel("Contact Number (11 digits):"));
-              JTextField contactField = new JTextField();
-              panel.add(contactField);
+                addResidentInfoPanel.add(new JLabel("Contact Number (11 digits):"));
+                JTextField contactField = new JTextField();
+                addResidentInfoPanel.add(contactField);
 
-              panel.add(new JLabel("Email:"));
-              JTextField emailField = new JTextField();
-              panel.add(emailField);
+                addResidentInfoPanel.add(new JLabel("Email:"));
+                JTextField emailField = new JTextField();
+                addResidentInfoPanel.add(emailField);
 
-              // Show the dialog
-              int result = JOptionPane.showConfirmDialog(null, panel, "Add Resident",
-                      JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                int result = JOptionPane.showConfirmDialog(null, addResidentInfoPanel, "Add Resident",
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-              if (result == JOptionPane.OK_OPTION) {
-                  String firstName = firstNameField.getText().trim();
-                  String middleName = middleNameField.getText().trim();
-                  String lastName = lastNameField.getText().trim();
-                  String suffix = suffixField.getText().trim();
-                  String address = addressField.getText().trim();
-                  String dob = dobField.getText().trim();
-                  String contact = contactField.getText().trim();
-                  String email = emailField.getText().trim();
+                if (result == JOptionPane.OK_OPTION) {
+                    String firstName = firstNameField.getText().trim();
+                    String middleName = middleNameField.getText().trim();
+                    String lastName = lastNameField.getText().trim();
+                    String suffix = suffixField.getText().trim();
+                    String address = addressField.getText().trim();
+                    String dateOfBirth = dobField.getText().trim();
+                    String contact = contactField.getText().trim();
+                    String email = emailField.getText().trim();
 
-                  // Validate required fields
-                  if (firstName.isEmpty() || lastName.isEmpty() || address.isEmpty() || dob.isEmpty() || contact.isEmpty() || email.isEmpty()) {
-                      JOptionPane.showMessageDialog(null, "Please fill in all required fields.", "Validation Error", JOptionPane.ERROR_MESSAGE);
-                      return;
-                  }
+                    if (firstName.isEmpty() || lastName.isEmpty() || address.isEmpty() || dateOfBirth.isEmpty() || contact.isEmpty() || email.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Please fill in all required fields.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
-                  // Validate contact number
-                  if (!contact.matches("\\d{11}")) {
-                      JOptionPane.showMessageDialog(null, "Contact number must be 11 digits.", "Validation Error", JOptionPane.ERROR_MESSAGE);
-                      return;
-                  }
+                    if (!contact.matches("\\d{11}")) {
+                        JOptionPane.showMessageDialog(null, "Contact number must be 11 digits.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
-                  // Validate date of birth format
-                  if (!dob.matches("\\d{2}/\\d{2}/\\d{4}")) {
-                      JOptionPane.showMessageDialog(null, "Date of Birth must be in the format dd/mm/yyyy.", "Validation Error", JOptionPane.ERROR_MESSAGE);
-                      return;
-                  }
+                    if (!dateOfBirth.matches("\\d{2}/\\d{2}/\\d{4}")) {
+                        JOptionPane.showMessageDialog(null, "Date of Birth must be in the format dd/mm/yyyy.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
-                  // Insert data into the database
-                  addResidentToDatabase(firstName, middleName, lastName, suffix, address, dob, contact, email);
-              }
-          }
-      });
-      btnAdd.setFont(new Font("Times New Roman", Font.BOLD, 20));
-      btnAdd.setBounds(211, 612, 138, 45);
-      welcomePanel.add(btnAdd);
-   // Button for Update
-      JButton btnUpdate = new JButton("Update");
-      btnUpdate.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-              int selectedRow = res_tbl.getSelectedRow();  // Get selected row index
+                    addResidentToDatabase(firstName, middleName, lastName, suffix, address, dateOfBirth, contact, email);
+                }
+            }
+        });
+        btnAdd.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        btnAdd.setBounds(211, 612, 138, 45);
+        addingResidentPanel.add(btnAdd);
 
-              // Check if a row is selected
-              if (selectedRow == -1) {
-                  JOptionPane.showMessageDialog(null, "Please select a resident to update.", "No Selection", JOptionPane.WARNING_MESSAGE);
-                  return;
-              }
+        JButton btnUpdate = new JButton("Update");
+        btnUpdate.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent eventForUpdateBtn) {
+                int selectedRow = residentTable.getSelectedRow();
 
-              // Retrieve the resident_id as Integer
-              int residentId = (Integer) res_tbl.getValueAt(selectedRow, 0);
-              String firstName = (String) res_tbl.getValueAt(selectedRow, 1);
-              String middleName = (String) res_tbl.getValueAt(selectedRow, 2);
-              String lastName = (String) res_tbl.getValueAt(selectedRow, 3);
-              String suffix = (String) res_tbl.getValueAt(selectedRow, 4);
-              String address = (String) res_tbl.getValueAt(selectedRow, 5);
-              String dob = res_tbl.getValueAt(selectedRow, 6).toString();
-              String contact = (String) res_tbl.getValueAt(selectedRow, 7);
-              String email = (String) res_tbl.getValueAt(selectedRow, 8);
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(null, "Please select a resident to update.", "No Selection", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
 
-              // Show the data in a dialog for editing
-              JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
-              JTextField firstNameField = new JTextField(firstName);
-              JTextField middleNameField = new JTextField(middleName);
-              JTextField lastNameField = new JTextField(lastName);
-              JTextField suffixField = new JTextField(suffix);
-              JTextField addressField = new JTextField(address);
-              JTextField dobField = new JTextField(dob);
-              JTextField contactField = new JTextField(contact);
-              JTextField emailField = new JTextField(email);
+                int residentId = (Integer) residentTable.getValueAt(selectedRow, 0);
+                String firstName = (String) residentTable.getValueAt(selectedRow, 1);
+                String middleName = (String) residentTable.getValueAt(selectedRow, 2);
+                String lastName = (String) residentTable.getValueAt(selectedRow, 3);
+                String suffix = (String) residentTable.getValueAt(selectedRow, 4);
+                String address = (String) residentTable.getValueAt(selectedRow, 5);
+                String dateOfBirth = residentTable.getValueAt(selectedRow, 6).toString();
+                String contact = (String) residentTable.getValueAt(selectedRow, 7);
+                String email = (String) residentTable.getValueAt(selectedRow, 8);
 
-              panel.add(new JLabel("First Name:"));
-              panel.add(firstNameField);
-              panel.add(new JLabel("Middle Name (Optional):"));
-              panel.add(middleNameField);
-              panel.add(new JLabel("Last Name:"));
-              panel.add(lastNameField);
-              panel.add(new JLabel("Suffix (Optional):"));
-              panel.add(suffixField);
-              panel.add(new JLabel("Address:"));
-              panel.add(addressField);
-              panel.add(new JLabel("Date of Birth (dd/MM/yyyy):"));
-              panel.add(dobField);
-              panel.add(new JLabel("Contact Number (11 digits):"));
-              panel.add(contactField);
-              panel.add(new JLabel("Email:"));
-              panel.add(emailField);
+                JPanel updateResidentInfoPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+                JTextField firstNameField = new JTextField(firstName);
+                JTextField middleNameField = new JTextField(middleName);
+                JTextField lastNameField = new JTextField(lastName);
+                JTextField suffixField = new JTextField(suffix);
+                JTextField addressField = new JTextField(address);
+                JTextField dobField = new JTextField(dateOfBirth);
+                JTextField contactField = new JTextField(contact);
+                JTextField emailField = new JTextField(email);
 
-              int result = JOptionPane.showConfirmDialog(null, panel, "Update Resident", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                updateResidentInfoPanel.add(new JLabel("First Name:"));
+                updateResidentInfoPanel.add(firstNameField);
+                updateResidentInfoPanel.add(new JLabel("Middle Name (Optional):"));
+                updateResidentInfoPanel.add(middleNameField);
+                updateResidentInfoPanel.add(new JLabel("Last Name:"));
+                updateResidentInfoPanel.add(lastNameField);
+                updateResidentInfoPanel.add(new JLabel("Suffix (Optional):"));
+                updateResidentInfoPanel.add(suffixField);
+                updateResidentInfoPanel.add(new JLabel("Address:"));
+                updateResidentInfoPanel.add(addressField);
+                updateResidentInfoPanel.add(new JLabel("Date of Birth (dd/MM/yyyy):"));
+                updateResidentInfoPanel.add(dobField);
+                updateResidentInfoPanel.add(new JLabel("Contact Number (11 digits):"));
+                updateResidentInfoPanel.add(contactField);
+                updateResidentInfoPanel.add(new JLabel("Email:"));
+                updateResidentInfoPanel.add(emailField);
 
-              if (result == JOptionPane.OK_OPTION) {
-                  // Get the updated values
-                  String updatedFirstName = firstNameField.getText().trim();
-                  String updatedMiddleName = middleNameField.getText().trim();
-                  String updatedLastName = lastNameField.getText().trim();
-                  String updatedSuffix = suffixField.getText().trim();
-                  String updatedAddress = addressField.getText().trim();
-                  String updatedDob = dobField.getText().trim();
-                  String updatedContact = contactField.getText().trim();
-                  String updatedEmail = emailField.getText().trim();
+                int result = JOptionPane.showConfirmDialog(null, updateResidentInfoPanel, "Update Resident", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-                  // Validate and update the resident in the database
-                  try {
-                      // Call the update method with updated values and residentId
-                      updateResidentInDatabase(residentId, updatedFirstName, updatedMiddleName, updatedLastName, updatedSuffix,
-                                                updatedAddress, updatedDob, updatedContact, updatedEmail);
-                  } catch (Exception ex) {
-                      JOptionPane.showMessageDialog(null, "Error updating resident: " + ex.getMessage(), "Update Error", JOptionPane.ERROR_MESSAGE);
-                  }
-              }
-          }
-      });
+                if (result == JOptionPane.OK_OPTION) {
+                    String updatedFirstName = firstNameField.getText().trim();
+                    String updatedMiddleName = middleNameField.getText().trim();
+                    String updatedLastName = lastNameField.getText().trim();
+                    String updatedSuffix = suffixField.getText().trim();
+                    String updatedAddress = addressField.getText().trim();
+                    String updatedDob = dobField.getText().trim();
+                    String updatedContact = contactField.getText().trim();
+                    String updatedEmail = emailField.getText().trim();
 
-      btnUpdate.setFont(new Font("Times New Roman", Font.BOLD, 20));
-      btnUpdate.setBounds(403, 612, 138, 45);
-      welcomePanel.add(btnUpdate);
+                    try {
+                        updateResidentInDatabase(residentId, updatedFirstName, updatedMiddleName, updatedLastName, updatedSuffix, updatedAddress, updatedDob, updatedContact, updatedEmail);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Error updating resident: " + ex.getMessage(), "Update Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
 
-      
-      JButton btnDel = new JButton("Delete");
-      btnDel.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-              int selectedRow = res_tbl.getSelectedRow();
+        btnUpdate.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        btnUpdate.setBounds(403, 612, 138, 45);
+        addingResidentPanel.add(btnUpdate);
 
-              // Check if a row is selected
-              if (selectedRow == -1) {
-                  JOptionPane.showMessageDialog(null, "Please select a resident to delete.", "No Selection", JOptionPane.WARNING_MESSAGE);
-                  return;
-              }
+        JButton btnDel = new JButton("Delete");
+        btnDel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent eventForDeleteBtn) {
+                int selectedRow = residentTable.getSelectedRow();
 
-              int residentId = (int) res_tbl.getValueAt(selectedRow, 0);
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(null, "Please select a resident to delete.", "No Selection", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
 
-              // Confirm the deletion with the user
-              int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this resident?",
-                      "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+                int residentId = (int) residentTable.getValueAt(selectedRow, 0);
 
-              if (confirm == JOptionPane.YES_OPTION) {
-                  // Call the delete method
-                  deleteResidentFromDatabase(residentId);
-              }
-          }
-      });
+                int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this resident?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
 
-      btnDel.setFont(new Font("Times New Roman", Font.BOLD, 20));
-      btnDel.setBounds(597, 612, 138, 45);
-      welcomePanel.add(btnDel);
-  }
-  
-  private void filterTable(String searchQuery) {
-      DefaultTableModel model = (DefaultTableModel) res_tbl.getModel();
-      TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-      res_tbl.setRowSorter(sorter);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    deleteResidentFromDatabase(residentId);
+                }
+            }
+        });
 
-      if (searchQuery.isEmpty() || searchQuery.equalsIgnoreCase("search")) {
-          sorter.setRowFilter(null); // Show all rows if the search query is empty
-      } else {
-          sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchQuery)); // Case-insensitive filtering
-      }
-  }
+        btnDel.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        btnDel.setBounds(597, 612, 138, 45);
+        addingResidentPanel.add(btnDel);
+    }
+    
+    private void filterTable(String searchQuery) {
+        DefaultTableModel filterModel = (DefaultTableModel) residentTable.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(filterModel);
+        residentTable.setRowSorter(sorter);
 
+        if (searchQuery.isEmpty() || searchQuery.equalsIgnoreCase("search")) {
+            sorter.setRowFilter(null);
+        } else {
+            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchQuery));
+        }
+    }
 
-  private void deleteResidentFromDatabase(int residentId) {
-      String query = "DELETE FROM ResidentDB WHERE resident_id = ?"; // Use resident_id as the unique identifier
+    private void deleteResidentFromDatabase(int residentId) {
+        String query = "DELETE FROM ResidentDB WHERE resident_id = ?";
 
-      try (Connection connection = getConnection();
-           PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (
+                Connection connectDeleteResident = getConnection();
+                PreparedStatement prepareDeleteResident = connectDeleteResident.prepareStatement(query)
+            ) {
+            prepareDeleteResident.setInt(1, residentId);
 
-          // Set the parameter for the DELETE query
-          preparedStatement.setInt(1, residentId);
+            int rowsDeleted = prepareDeleteResident.executeUpdate();
+            if (rowsDeleted > 0) {
+                JOptionPane.showMessageDialog(ResidentForm.this, "Resident deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                loadResidentData();
+            } else {
+                JOptionPane.showMessageDialog(ResidentForm.this, "No resident found to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException handleDatabaseDeleteResident) {
+            handleDatabaseDeleteResident.printStackTrace();
+            JOptionPane.showMessageDialog(ResidentForm.this, "Error deleting resident: " + handleDatabaseDeleteResident.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
-          int rowsDeleted = preparedStatement.executeUpdate();  // Execute the DELETE query
-          if (rowsDeleted > 0) {
-              JOptionPane.showMessageDialog(this, "Resident deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-              loadResidentData();  // Reload the table data after deletion
-          } else {
-              JOptionPane.showMessageDialog(this, "No resident found to delete.", "Error", JOptionPane.ERROR_MESSAGE);
-          }
-      } catch (SQLException e) {
-          e.printStackTrace();
-          JOptionPane.showMessageDialog(this, "Error deleting resident: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
-      }
-  }
+    private void updateResidentInDatabase(int residentId, String firstName, String middleName, String lastName, String suffix, String address, String dateOfBirth, String contact, String email) {
+        String query = "UPDATE ResidentDB " +
+                       "SET resident_firstName = ?, resident_midName = ?, resident_lastName = ?, resident_suffix = ?, resident_address = ?, resident_DoB = ?, resident_contactNo = ?, resident_email = ? " +
+                       "WHERE resident_id = ?";
+        
+        try (
+                Connection connectUpdateResident = getConnection();
+                PreparedStatement prepareUpdateResident = connectUpdateResident.prepareStatement(query)
+            ) {
+            java.sql.Date normalizeSQLdate = normalizeDate(dateOfBirth);
 
-      
-  private void updateResidentInDatabase(int residentId, String firstName, String middleName, String lastName, String suffix,
-          String address, String dob, String contact, String email) {
-      String query = "UPDATE ResidentDB SET resident_firstName = ?, resident_midName = ?, resident_lastName = ?, " +
-                     "resident_suffix = ?, resident_address = ?, resident_DoB = ?, resident_contactNo = ?, resident_email = ? " +
-                     "WHERE resident_id = ?";
-      
-      try (Connection connection = getConnection();
-           PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            prepareUpdateResident.setString(1, firstName.trim());
+            prepareUpdateResident.setString(2, middleName.isEmpty() ? null : middleName.trim());
+            prepareUpdateResident.setString(3, lastName.trim());
+            prepareUpdateResident.setString(4, suffix.isEmpty() ? null : suffix.trim());
+            prepareUpdateResident.setString(5, address.trim());
+            prepareUpdateResident.setDate(6, normalizeSQLdate); 
+            prepareUpdateResident.setString(7, contact.trim());
+            prepareUpdateResident.setString(8, email.trim());
+            prepareUpdateResident.setInt(9, residentId);
 
-          // Normalize the date string and convert it to java.sql.Date
-          java.sql.Date sqlDate = normalizeDate(dob);
+            int rowsUpdated = prepareUpdateResident.executeUpdate();
+            if (rowsUpdated > 0) {
+                JOptionPane.showMessageDialog(ResidentForm.this, "Resident updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                loadResidentData();
+            } else {
+                JOptionPane.showMessageDialog(ResidentForm.this, "No resident found to update.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException handleDatabaseUpdateResident) {
+            handleDatabaseUpdateResident.printStackTrace();
+            JOptionPane.showMessageDialog(ResidentForm.this, "Error updating resident: " + handleDatabaseUpdateResident.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        } catch (ParseException handleParseUpdateResident) {
+            handleParseUpdateResident.printStackTrace();
+            JOptionPane.showMessageDialog(ResidentForm.this, "Invalid Date format. Please use dd/MM/yyyy.", "Date Format Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private java.sql.Date normalizeDate(String dateOfBirth) throws ParseException {
+        SimpleDateFormat createFormatDate = new SimpleDateFormat("dd/MM/yyyy");
+        createFormatDate.setLenient(false);
+        java.util.Date parsedDate = createFormatDate.parse(dateOfBirth);
+        return new java.sql.Date(parsedDate.getTime());
+    }
 
-          // Set all parameters in the query
-          preparedStatement.setString(1, firstName.trim());
-          preparedStatement.setString(2, middleName.isEmpty() ? null : middleName.trim());
-          preparedStatement.setString(3, lastName.trim());
-          preparedStatement.setString(4, suffix.isEmpty() ? null : suffix.trim());
-          preparedStatement.setString(5, address.trim());
-          preparedStatement.setDate(6, sqlDate); 
-          preparedStatement.setString(7, contact.trim());
-          preparedStatement.setString(8, email.trim());
-          preparedStatement.setInt(9, residentId);
+    private void loadResidentData() {
+        String query = "SELECT * FROM ResidentDB";
 
-          int rowsUpdated = preparedStatement.executeUpdate();  // Execute the update query
-          if (rowsUpdated > 0) {
-              JOptionPane.showMessageDialog(this, "Resident updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-              loadResidentData();  // Reload the data to reflect the changes in the table
-          } else {
-              JOptionPane.showMessageDialog(this, "No resident found to update.", "Error", JOptionPane.ERROR_MESSAGE);
-          }
-      } catch (SQLException e) {
-          e.printStackTrace();
-          JOptionPane.showMessageDialog(this, "Error updating resident: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
-      } catch (ParseException e) {
-          e.printStackTrace();
-          JOptionPane.showMessageDialog(this, "Invalid Date format. Please use dd/MM/yyyy.", "Date Format Error", JOptionPane.ERROR_MESSAGE);
-      }
-  }
-  
-  private java.sql.Date normalizeDate(String dob) throws ParseException {
-      SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-      dateFormat.setLenient(false);  // Ensure strict parsing
-      java.util.Date parsedDate = dateFormat.parse(dob);  // Parse the date string
-      return new java.sql.Date(parsedDate.getTime());  // Convert to java.sql.Date
-  }
+        try (
+                Connection connectLoadResident = getConnection();
+                Statement statementLoadResident = connectLoadResident.createStatement();
+                ResultSet resultLoadResident = statementLoadResident.executeQuery(query)
+            ) {
 
+            DefaultTableModel loadModel = new DefaultTableModel() {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
 
-  private void loadResidentData() {
-  String query = "SELECT * FROM ResidentDB"; // Query to fetch all columns including resident_id
+            loadModel.addColumn("Resident ID");
+            loadModel.addColumn("First Name");
+            loadModel.addColumn("Middle Name");
+            loadModel.addColumn("Last Name");
+            loadModel.addColumn("Suffix");
+            loadModel.addColumn("Address");
+            loadModel.addColumn("Date of Birth");
+            loadModel.addColumn("Contact Number");
+            loadModel.addColumn("Email");
 
-  try (Connection connection = getConnection();
-       Statement statement = connection.createStatement();
-       ResultSet resultSet = statement.executeQuery(query)) {
+            while (resultLoadResident.next()) {
+                loadModel.addRow(new Object[]{
+                    resultLoadResident.getInt("resident_id"),
+                    resultLoadResident.getString("resident_firstName"),
+                    resultLoadResident.getString("resident_midName"),
+                    resultLoadResident.getString("resident_lastName"),
+                    resultLoadResident.getString("resident_suffix"),
+                    resultLoadResident.getString("resident_address"),
+                    new SimpleDateFormat("dd/MM/yyyy").format(resultLoadResident.getDate("resident_DoB")),
+                    resultLoadResident.getString("resident_contactNo"),
+                    resultLoadResident.getString("resident_email")
+                });
+            }
 
-      // Update table model with your specific columns
-      DefaultTableModel model = new DefaultTableModel() {
-          @Override
-          public boolean isCellEditable(int row, int column) {
-              return false; // Make all cells uneditable
-          }
-      };
+            residentTable.setModel(loadModel); 
+            residentTable.getColumnModel().getColumn(0).setMinWidth(0);
+            residentTable.getColumnModel().getColumn(0).setMaxWidth(0);
+            residentTable.getColumnModel().getColumn(0).setWidth(0);
 
-      // Add columns
-      model.addColumn("Resident ID");
-      model.addColumn("First Name");
-      model.addColumn("Middle Name");
-      model.addColumn("Last Name");
-      model.addColumn("Suffix");
-      model.addColumn("Address");
-      model.addColumn("Date of Birth");
-      model.addColumn("Contact Number");
-      model.addColumn("Email");
-
-      while (resultSet.next()) {
-        model.addRow(new Object[]{
-              resultSet.getInt("resident_id"),
-              resultSet.getString("resident_firstName"),
-              resultSet.getString("resident_midName"),
-              resultSet.getString("resident_lastName"),
-              resultSet.getString("resident_suffix"),
-              resultSet.getString("resident_address"),
-              new SimpleDateFormat("dd/MM/yyyy").format(resultSet.getDate("resident_DoB")), // Format the date
-              resultSet.getString("resident_contactNo"),
-              resultSet.getString("resident_email")
-          });
-
-      }
-
-      res_tbl.setModel(model); 
-      res_tbl.getColumnModel().getColumn(0).setMinWidth(0);
-      res_tbl.getColumnModel().getColumn(0).setMaxWidth(0);
-      res_tbl.getColumnModel().getColumn(0).setWidth(0);
-
-  } catch (SQLException e) {
-      e.printStackTrace();
-      JOptionPane.showMessageDialog(this, "Error loading data: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
-  }
-}
+        } catch (SQLException handleDatabaseLoad) {
+            handleDatabaseLoad.printStackTrace();
+            JOptionPane.showMessageDialog(ResidentForm.this, "Error loading data: " + handleDatabaseLoad.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }

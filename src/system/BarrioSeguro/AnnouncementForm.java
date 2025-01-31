@@ -12,16 +12,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-import javax.mail.Authenticator;
-
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import java.util.Properties;
+
+import javax.mail.Authenticator;
+import javax.mail.Message;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
-import javax.mail.Message;
 import javax.mail.Transport;
 
 import javax.mail.internet.InternetAddress;
@@ -30,23 +30,17 @@ import javax.mail.internet.MimeMessage;
 import javax.swing.JButton;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import javax.swing.border.EmptyBorder;
 
-import java.util.Properties;
-
-/**
- * Handles announcements creation or display.
- * You may have repeated code for sending emails or saving to DB.
- */
 public class AnnouncementForm extends BaseForm {
 
-    private JTextField subjecttf;
-    private JTextArea messagetf;
+    private JTextField subjectTextField;
+    private JTextArea messageTextField;
 
     public AnnouncementForm(BarrioSeguro appController) {
         super(appController);
@@ -55,192 +49,189 @@ public class AnnouncementForm extends BaseForm {
     }
 
     private void initialize() {
-        JLayeredPane layeredPane = new JLayeredPane();
-        setContentPane(layeredPane);
+        JLayeredPane announcePane = new JLayeredPane();
+        setContentPane(announcePane);
 
-        addBackgroundImage(layeredPane);
-
-        addDashboardPanel(layeredPane);
-
-        addWelcomePanel(layeredPane);
+        addBackgroundImage(announcePane);
+        addDashboardPanel(announcePane);
+        addAnnouncePanel(announcePane);
     }
 
-    private void addWelcomePanel(JLayeredPane layeredPane) {
-      // Use JPanel instead of Panel
-      JPanel welcomePanel = new JPanel() {
-          @Override
-          protected void paintComponent(Graphics g) {
-              super.paintComponent(g);
-              Graphics2D g2d = (Graphics2D) g;
-              g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-              g2d.setColor(getBackground());
-              g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 75, 75);
-          }
-      };
-      welcomePanel.setBounds(480, 185, 895, 640);
-      welcomePanel.setBackground(new Color(102, 77, 77, 178)); 
-      welcomePanel.setLayout(null);
-      welcomePanel.setOpaque(false);
+    private void addAnnouncePanel(JLayeredPane announcePane) {
+        JPanel announcePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics paintGraphics) {
+                super.paintComponent(paintGraphics);
+                Graphics2D paintGraphicsWith2D = (Graphics2D) paintGraphics;
+                paintGraphicsWith2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                paintGraphicsWith2D.setColor(getBackground());
+                paintGraphicsWith2D.fillRoundRect(0, 0, getWidth(), getHeight(), 75, 75);
+            }
+        };
+        announcePanel.setBounds(480, 185, 895, 640);
+        announcePanel.setBackground(new Color(102, 77, 77, 178)); 
+        announcePanel.setLayout(null);
+        announcePanel.setOpaque(false);
 
-      layeredPane.add(welcomePanel, JLayeredPane.PALETTE_LAYER);
+        announcePane.add(announcePanel, JLayeredPane.PALETTE_LAYER);
 
-      // For the subject text field
-      subjecttf = new JTextField("Subject");  // Set the placeholder
-      subjecttf.setToolTipText("");
-      subjecttf.setHorizontalAlignment(SwingConstants.LEFT);
-      subjecttf.setForeground(Color.LIGHT_GRAY);
-      subjecttf.setFont(new Font("SansSerif", Font.PLAIN, 25));
-      subjecttf.setBorder(new EmptyBorder(10, 20, 10, 20));
-      subjecttf.setBounds(51, 50, 798, 53);
+        subjectTextField = new JTextField("Subject");
+        subjectTextField.setToolTipText("");
+        subjectTextField.setHorizontalAlignment(SwingConstants.LEFT);
+        subjectTextField.setForeground(Color.LIGHT_GRAY);
+        subjectTextField.setFont(new Font("SansSerif", Font.PLAIN, 25));
+        subjectTextField.setBorder(new EmptyBorder(10, 20, 10, 20));
+        subjectTextField.setBounds(51, 50, 798, 53);
 
-      subjecttf.addFocusListener(new FocusListener() {
-          @Override
-          public void focusGained(FocusEvent e) {
-              if (subjecttf.getText().equals("Subject")) {  // Check if placeholder is visible
-                  subjecttf.setText("");  // Clear the placeholder text
-                  subjecttf.setForeground(Color.BLACK);  // Set text color to black when typing
-              }
-          }
+        subjectTextField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent eventForSubjectField) {
+                if (subjectTextField.getText().equals("Subject")) {
+                    subjectTextField.setText("");
+                    subjectTextField.setForeground(Color.BLACK);
+                }
+            }
 
-          @Override
-          public void focusLost(FocusEvent e) {
-              if (subjecttf.getText().isEmpty()) {  // If the text field is empty
-                  subjecttf.setText("Subject");  // Restore the placeholder text
-                  subjecttf.setForeground(Color.LIGHT_GRAY);  // Set text color back to light gray
-              }
-          }
-      });
+            @Override
+            public void focusLost(FocusEvent eventForSubjectField) {
+                if (subjectTextField.getText().isEmpty()) {
+                    subjectTextField.setText("Subject");
+                    subjectTextField.setForeground(Color.LIGHT_GRAY);
+                }
+            }
+        });
 
-      welcomePanel.add(subjecttf);
+        announcePanel.add(subjectTextField);
 
-   // For messagetf (JTextArea) with a placeholder
-      messagetf = new JTextArea("Enter a message...") {
-          @Override
-          protected void paintComponent(Graphics g) {
-              super.paintComponent(g);
-              if (getText().isEmpty() && getForeground() == Color.LIGHT_GRAY) {
-                  // Draw the placeholder at the top-left corner (x=10, y=20 for example)
-                  g.setColor(getForeground());
-                  g.drawString("Enter a message...", 10, 20); 
-              }
-          }
-      };
-      messagetf.setFont(new Font("SansSerif", Font.PLAIN, 14));
-      messagetf.setForeground(Color.LIGHT_GRAY); // Light gray color for placeholder
-      messagetf.setBounds(51, 136, 798, 323);
-      messagetf.setWrapStyleWord(true);
-      messagetf.setLineWrap(true);
+        messageTextField = new JTextArea("Enter a message...") {
+            @Override
+            protected void paintComponent(Graphics paintGraphics) {
+                super.paintComponent(paintGraphics);
+                if (getText().isEmpty() && getForeground() == Color.LIGHT_GRAY) {
+                    paintGraphics.setColor(getForeground());
+                    paintGraphics.drawString("Enter a message...", 10, 20); 
+                }
+            }
+        };
+        messageTextField.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        messageTextField.setForeground(Color.LIGHT_GRAY);
+        messageTextField.setBounds(51, 136, 798, 323);
+        messageTextField.setWrapStyleWord(true);
+        messageTextField.setLineWrap(true);
 
-      // Set margin
-      messagetf.setMargin(new Insets(20, 20, 20, 20));
+        messageTextField.setMargin(new Insets(20, 20, 20, 20));
 
-      // Add FocusListener to handle placeholder behavior
-      messagetf.addFocusListener(new FocusListener() {
-          @Override
-          public void focusGained(FocusEvent e) {
-              if (messagetf.getText().equals("Enter a message...")) { 
-                  messagetf.setText("");  // Clear the placeholder text
-                  messagetf.setForeground(Color.BLACK);  // Set text color to black when typing
-              }
-          }
+        messageTextField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent eventForMessageField) {
+                if (messageTextField.getText().equals("Enter a message...")) { 
+                    messageTextField.setText("");
+                    messageTextField.setForeground(Color.BLACK);
+                }
+            }
 
-          @Override
-          public void focusLost(FocusEvent e) {
-              if (messagetf.getText().isEmpty()) {  
-                  messagetf.setText("Enter a message..."); 
-                  messagetf.setForeground(Color.LIGHT_GRAY);  
-              }
-          }
-      });
+            @Override
+            public void focusLost(FocusEvent eventForMessageField) {
+                if (messageTextField.getText().isEmpty()) {  
+                    messageTextField.setText("Enter a message..."); 
+                    messageTextField.setForeground(Color.LIGHT_GRAY);  
+                }
+            }
+        });
 
-      welcomePanel.add(messagetf);
-      
-      JButton emailbtn = new JButton("Send to Email");
-      emailbtn.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-              String subject = subjecttf.getText(); // Get the subject from subjecttf
-              String messageContent = messagetf.getText(); // Get the message from messagetf
+        announcePanel.add(messageTextField);
+        
+        JButton emailBtn = new JButton("Send to Email");
+        emailBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent eventForEmailBtn) {
+                String subject = subjectTextField.getText();
+                String messageContent = messageTextField.getText();
 
-              // Send email to all emails from the database
-              sendEmail(subject, messageContent);
-          }
-      });
-      emailbtn.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-      emailbtn.setBounds(569, 497, 177, 55);
-      welcomePanel.add(emailbtn);
-      
-      JButton smsbtn = new JButton("Send to SMS");
-      smsbtn.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-      smsbtn.setBounds(181, 497, 177, 55);
-      welcomePanel.add(smsbtn);
-  }
-  
-  private void sendEmail(String subject, String messageContent) {
-      final String username = "gabdelacruz926@gmail.com"; // Sender's email
-      final String password = "wnvmmbowuvxtbbvr";
+                sendEmail(subject, messageContent);
+            }
+        });
+        emailBtn.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        emailBtn.setBounds(569, 497, 177, 55);
+        announcePanel.add(emailBtn);
+        
+        JButton smsBtn = new JButton("Send to SMS");
+        smsBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent eventForSMSbtn) {
+                String subject = subjectTextField.getText();
+                String messageContent = messageTextField.getText();
 
-      // Set up properties for the SMTP server (Gmail)
-      Properties props = new Properties();
-      props.put("mail.smtp.auth", "true");
-      props.put("mail.smtp.starttls.enable", "true");
-      props.put("mail.smtp.host", "smtp.gmail.com");
-      props.put("mail.smtp.port", "587");
+                sendSMS(subject, messageContent);
+            }
+        });
+        smsBtn.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        smsBtn.setBounds(181, 497, 177, 55);
+        announcePanel.add(smsBtn);
+    }
 
-      // Create an authenticator with the email credentials
-      Authenticator authenticator = new Authenticator() {
-          protected PasswordAuthentication getPasswordAuthentication() {
-              return new PasswordAuthentication(username, password);
-          }
-      };
+    private void sendEmail(String subject, String messageContent) {
+        final String username = "gabdelacruz926@gmail.com";
+        final String password = "wnvmmbowuvxtbbvr";
 
-      // Create the Session object
-      Session session = Session.getInstance(props, authenticator);
+        Properties propsGmailServer = new Properties();
+        propsGmailServer.put("mail.smtp.auth", "true");
+        propsGmailServer.put("mail.smtp.starttls.enable", "true");
+        propsGmailServer.put("mail.smtp.host", "smtp.gmail.com");
+        propsGmailServer.put("mail.smtp.port", "587");
 
-      try {
-          // Query the database for all resident emails
-          Connection conn = DriverManager.getConnection("jdbc:ucanaccess://Database/BarrioSeguroDB.accdb");
-          String query = "SELECT resident_email FROM ResidentDB";
-          Statement stmt = conn.createStatement();
-          ResultSet rs = stmt.executeQuery(query);
+        Authenticator emailAuthenticator = new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        };
 
-          // Create a list to store the email addresses
-          StringBuilder emailAddresses = new StringBuilder();
+        Session sessionForEmail = Session.getInstance(propsGmailServer, emailAuthenticator);
 
-          // Iterate over the result set and add each email to the list
-          while (rs.next()) {
-              String email = rs.getString("resident_email");
-              emailAddresses.append(email).append(","); // Add email to the list
-          }
+        try {
+            Connection connectSendEmail = getConnection();
+            String query = "SELECT resident_email FROM ResidentDB";
+            Statement statementSendEmail = connectSendEmail.createStatement();
+            ResultSet resultSendEmail = statementSendEmail.executeQuery(query);
 
-          // Remove comma
-          if (emailAddresses.length() > 0) {
-              emailAddresses.setLength(emailAddresses.length() - 1);
-          }
+            StringBuilder listEmailAddress = new StringBuilder();
 
-          // Create a new email message
-          Message msg = new MimeMessage(session);
-          msg.setFrom(new InternetAddress(username)); // Sender's email
-          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailAddresses.toString())); // Recipient's emails
-          msg.setSubject(subject); // Set the subject
-          msg.setText(messageContent); // Set the message content
+            while (resultSendEmail.next()) {
+                String email = resultSendEmail.getString("resident_email");
+                listEmailAddress.append(email).append(",");
+            }
 
-          // Send the message
-          Transport.send(msg);
-          
-          subjecttf.setText("");
-          messagetf.setText("");
-         
+            if (listEmailAddress.length() > 0) {
+                listEmailAddress.setLength(listEmailAddress.length() - 1);
+            }
 
-          // Close the resources
-          rs.close();
-          stmt.close();
-          conn.close();
+            Message createNewMessage = new MimeMessage(sessionForEmail);
+            createNewMessage.setFrom(new InternetAddress(username));
+            createNewMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(listEmailAddress.toString()));
+            createNewMessage.setSubject(subject);
+            createNewMessage.setText(messageContent);
 
-          JOptionPane.showMessageDialog(this, "Emails sent successfully!");
+            Transport.send(createNewMessage);
+            
+            subjectTextField.setText("");
+            messageTextField.setText("");
+            
+            resultSendEmail.close();
+            statementSendEmail.close();
+            connectSendEmail.close();
 
-      } catch (Exception e) {
-          e.printStackTrace();
-          JOptionPane.showMessageDialog(this, "Failed to send emails. " + e.getMessage());
-      }
-  }
+            JOptionPane.showMessageDialog(AnnouncementForm.this, "Emails sent successfully!");
+
+        } catch (Exception handleEmailException) {
+            handleEmailException.printStackTrace();
+            JOptionPane.showMessageDialog(AnnouncementForm.this, "Failed to send emails. " + handleEmailException.getMessage());
+        }
+    }
+
+    private void sendSMS(String subject, String messageContent) {
+        /* Assume that we send the SMS to the residents */
+        /* Paid SMS API is recommended. */
+        subjectTextField.setText("");
+        messageTextField.setText("");
+
+        JOptionPane.showMessageDialog(AnnouncementForm.this, "SMS sent successfully!");
+    }
 }
