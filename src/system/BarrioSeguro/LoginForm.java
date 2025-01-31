@@ -122,7 +122,7 @@ public class LoginForm extends BaseForm {
                     dispose();
                     appController.openHomepageForm();
                 } else {
-                    JOptionPane.showMessageDialog(LoginForm.this, "Invalid ID Number","Error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(LoginForm.this, "Invalid ID Number","Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
