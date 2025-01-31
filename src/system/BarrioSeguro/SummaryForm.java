@@ -137,6 +137,7 @@ public class SummaryForm extends BaseForm {
         summaryPanel.add(searchTextField);
         
         JButton viewBtn = new JButton("VIEW");
+        styleRoundedButton(viewBtn);
         viewBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForViewBtn) {
                 int selectedRow = incidentTable.getSelectedRow();

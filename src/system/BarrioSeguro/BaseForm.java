@@ -30,6 +30,11 @@ public abstract class BaseForm extends JFrame {
 
     protected static final String DATABASE_PATH = "jdbc:ucanaccess://Database/BarrioSeguroDB.accdb";
 
+    protected final Color DEFAULT_COLOR = new Color(220, 20, 60);
+    protected final Color CLICK_COLOR = new Color(180, 0, 40);
+    protected final Color HOVER_COLOR = new Color(200, 0, 50);
+
+
     protected BarrioSeguro appController;
 
     public BaseForm(BarrioSeguro accessAppControl) {
@@ -90,12 +95,8 @@ public abstract class BaseForm extends JFrame {
     }
 
     private void addDashboardButtons(JPanel dashboardPanel) {
-        Color defaultColor = new Color(220, 20, 60);  // Light grey default color
-        Color clickColor = new Color(180, 0, 40);    // Darker grey when clicked
-        Color hoverColor = new Color(200, 0, 50);    // Prevents white highlight
-
         JButton announceBtn = new JButton("Announcement");
-        styleButton(announceBtn, defaultColor, clickColor, hoverColor);
+        styleButton(announceBtn);
         announceBtn.setBounds(0, 250, 430, 78);
         announceBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForAnnounceBtn) {
@@ -115,7 +116,7 @@ public abstract class BaseForm extends JFrame {
 
 
         JButton residentBtn = new JButton("Resident Database");
-        styleButton(residentBtn, defaultColor, clickColor, hoverColor);
+        styleButton(residentBtn);
         residentBtn.setBounds(0, 371, 430, 78);
         residentBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForResidentBtn) {
@@ -135,7 +136,7 @@ public abstract class BaseForm extends JFrame {
 
 
         JButton incidentBtn = new JButton("Incident Reports");
-        styleButton(incidentBtn, defaultColor, clickColor, hoverColor);
+        styleButton(incidentBtn);
         incidentBtn.setBounds(0, 489, 430, 78);
         incidentBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForIncidentBtn) {
@@ -155,7 +156,7 @@ public abstract class BaseForm extends JFrame {
 
 
         JButton summaryBtn = new JButton("Summary Reports");
-        styleButton(summaryBtn, defaultColor, clickColor, hoverColor);
+        styleButton(summaryBtn);
         summaryBtn.setBounds(0, 611, 430, 78);
         summaryBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForSummaryBtn) {
@@ -175,7 +176,7 @@ public abstract class BaseForm extends JFrame {
 
 
         JButton logoutBtn = new JButton("Log Out");
-        styleRoundedButton(logoutBtn, defaultColor, clickColor, hoverColor);
+        styleRoundedButton(logoutBtn);
         logoutBtn.setBounds(135, 805, 150, 55);
         logoutBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForSummaryBtn) {
@@ -189,40 +190,40 @@ public abstract class BaseForm extends JFrame {
         dashboardPanel.add(logoutBtn);
     }
 
-    private void styleButton(JButton button, Color defaultColor, Color clickColor, Color hoverColor) {
+    private void styleButton(JButton button) {
         button.setFont(new Font("Times New Roman", Font.PLAIN, 25));
         button.setBorderPainted(false);
         button.setFocusPainted(false);
         button.setContentAreaFilled(false);
         button.setOpaque(true);
         button.setForeground(Color.WHITE);
-        button.setBackground(defaultColor);
+        button.setBackground(DEFAULT_COLOR);
 
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent eventButtonPress) {
-                button.setBackground(clickColor);
+                button.setBackground(CLICK_COLOR);
             }
 
             @Override
             public void mouseReleased(MouseEvent eventButtonRelease) {
-                button.setBackground(defaultColor);
+                button.setBackground(DEFAULT_COLOR);
             }
 
             @Override
             public void mouseEntered(MouseEvent eventButtonEnter) {
-                button.setBackground(hoverColor);
+                button.setBackground(HOVER_COLOR);
             }
 
             @Override
             public void mouseExited(MouseEvent eventButtonExit) {
-                button.setBackground(defaultColor);
+                button.setBackground(DEFAULT_COLOR);
             }
         });
     }
 
-    private void styleRoundedButton(JButton button, Color defaultColor, Color clickColor, Color hoverColor) {
-        styleButton(button, defaultColor, clickColor, hoverColor);
+    protected void styleRoundedButton(JButton button) {
+        styleButton(button);
         button.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         button.setOpaque(false);
         button.setContentAreaFilled(false);
@@ -232,12 +233,12 @@ public abstract class BaseForm extends JFrame {
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent eventButtonPress) {
-                button.setBackground(clickColor);
+                button.setBackground(CLICK_COLOR);
             }
     
             @Override
             public void mouseReleased(MouseEvent eventButtonRelease) {
-                button.setBackground(defaultColor);
+                button.setBackground(DEFAULT_COLOR);
             }
         });
     

@@ -158,6 +158,7 @@ public class ResidentForm extends BaseForm {
         addingResidentPanel.add(searchTextField);
 
         JButton btnAdd = new JButton("Add");
+        styleRoundedButton(btnAdd);
         btnAdd.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForAddBtn) {
                 JPanel addResidentInfoPanel = new JPanel(new GridLayout(0, 2, 10, 10));
@@ -225,11 +226,11 @@ public class ResidentForm extends BaseForm {
                 }
             }
         });
-        btnAdd.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        btnAdd.setBounds(211, 612, 138, 45);
+        btnAdd.setBounds(68, 612, 147, 64);
         addingResidentPanel.add(btnAdd);
 
         JButton btnUpdate = new JButton("Update");
+        styleRoundedButton(btnUpdate);
         btnUpdate.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForUpdateBtn) {
                 int selectedRow = residentTable.getSelectedRow();
@@ -296,12 +297,11 @@ public class ResidentForm extends BaseForm {
                 }
             }
         });
-
-        btnUpdate.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        btnUpdate.setBounds(403, 612, 138, 45);
+        btnUpdate.setBounds(268, 612, 147, 62);
         addingResidentPanel.add(btnUpdate);
 
         JButton btnDel = new JButton("Delete");
+        styleRoundedButton(btnDel);
         btnDel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForDeleteBtn) {
                 int selectedRow = residentTable.getSelectedRow();
@@ -320,10 +320,14 @@ public class ResidentForm extends BaseForm {
                 }
             }
         });
-
-        btnDel.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        btnDel.setBounds(597, 612, 138, 45);
+        btnDel.setBounds(468, 612, 147, 62);
         addingResidentPanel.add(btnDel);
+
+        /* In progress... just create a fake function, then notify when the ID with its details is actually going to be printed. */
+        JButton btnPrintID = new JButton("Print ID");
+        styleRoundedButton(btnPrintID);
+        btnPrintID.setBounds(668, 612, 147, 62);
+        addingResidentPanel.add(btnPrintID);
     }
     
     private void filterTable(String searchQuery) {

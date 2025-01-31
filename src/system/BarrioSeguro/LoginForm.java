@@ -2,7 +2,6 @@ package system.BarrioSeguro;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -108,43 +107,10 @@ public class LoginForm extends BaseForm {
         idNumberTextBox.setBorder(new EmptyBorder(10, 20, 10, 20));
         adminPanel.add(idNumberTextBox);
 
-        JButton loginButton = new JButton("Log In") {
-            @Override
-            protected void paintComponent(Graphics paintGraphics) {
-                Graphics2D paintGraphicsWith2D = (Graphics2D) paintGraphics.create();
-                paintGraphicsWith2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        
-                paintGraphicsWith2D.setColor(getBackground());
-                paintGraphicsWith2D.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
-        
-                paintGraphicsWith2D.setColor(getForeground());
-                FontMetrics paintWithFontMeter = paintGraphicsWith2D.getFontMetrics();
-                int xSize = (getWidth() - paintWithFontMeter.stringWidth(getText())) / 2;
-                int ySize = (getHeight() + paintWithFontMeter.getAscent()) / 2 - 2;
-                paintGraphicsWith2D.drawString(getText(), xSize, ySize);
-        
-                paintGraphicsWith2D.dispose();
-            }
-        };
-        
+        JButton loginButton = new JButton("Log In");
+        styleRoundedButton(loginButton);
         loginButton.setFont(new Font("Times New Roman", Font.PLAIN, 25));
-        loginButton.setForeground(Color.WHITE);
-        loginButton.setBackground(new Color(220, 20, 60));
-        loginButton.setOpaque(false);
-        loginButton.setContentAreaFilled(false);
-        loginButton.setBorderPainted(false);
-        loginButton.setFocusPainted(false);
         loginButton.setBounds(184, 346, 193, 53);
-        
-        loginButton.addChangeListener(eventLoginListener -> {
-            if (loginButton.getModel().isPressed()) {
-                loginButton.setBackground(new Color(180, 0, 40));
-            } else if (loginButton.getModel().isRollover()) {
-                loginButton.setBackground(new Color(200, 0, 50));
-            } else {
-                loginButton.setBackground(new Color(220, 20, 60));
-            }
-        });
         
         adminPanel.add(loginButton);
         

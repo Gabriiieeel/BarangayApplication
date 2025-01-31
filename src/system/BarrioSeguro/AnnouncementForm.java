@@ -140,8 +140,9 @@ public class AnnouncementForm extends BaseForm {
         });
 
         announcePanel.add(messageTextField);
-        
+
         JButton emailBtn = new JButton("Send to Email");
+        styleRoundedButton(emailBtn);
         emailBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForEmailBtn) {
                 String subject = subjectTextField.getText();
@@ -150,11 +151,11 @@ public class AnnouncementForm extends BaseForm {
                 sendEmail(subject, messageContent);
             }
         });
-        emailBtn.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         emailBtn.setBounds(569, 497, 177, 55);
         announcePanel.add(emailBtn);
         
         JButton smsBtn = new JButton("Send to SMS");
+        styleRoundedButton(smsBtn);
         smsBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent eventForSMSbtn) {
                 String subject = subjectTextField.getText();
@@ -163,7 +164,6 @@ public class AnnouncementForm extends BaseForm {
                 sendSMS(subject, messageContent);
             }
         });
-        smsBtn.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         smsBtn.setBounds(181, 497, 177, 55);
         announcePanel.add(smsBtn);
     }
