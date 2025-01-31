@@ -1,42 +1,36 @@
 package system.BarrioSeguro;
-/**
- * Acts as the central “controller” that decides
- * which form appears and manages overall workflow.
- */
+
 public class BarrioSeguro {
 
-    public void startApplication() {
-        // The first form to appear is the login form:
-        LoginForm loginForm = new LoginForm(this);
-        loginForm.setVisible(true);
+    public BarrioSeguro() {}
+
+    protected void startApplication() {
+        LoginForm loginScreen = new LoginForm(BarrioSeguro.this);
+        loginScreen.setVisible(true);
     }
 
-    // Open the homepage after login
-    public void openHomepageForm() {
-        HomepageForm homepage = new HomepageForm(this);
-        homepage.setVisible(true);
+    protected void openHomepageForm() {
+        HomepageForm homepageScreen = new HomepageForm(BarrioSeguro.this);
+        homepageScreen.setVisible(true);
     }
 
-    public void openCrimeForm() {
-        CrimeForm crimeForm = new CrimeForm(this);
-        crimeForm.setVisible(true);
+    protected void openAnnouncementForm() {
+        AnnouncementForm announcementBoardScreen = new AnnouncementForm(BarrioSeguro.this);
+        announcementBoardScreen.setVisible(true);
     }
 
-    public void openResidentForm() {
-        ResidentForm residentForm = new ResidentForm(this);
-        residentForm.setVisible(true);
+    protected void openResidentForm() {
+        ResidentForm residentManagementScreen = new ResidentForm(BarrioSeguro.this);
+        residentManagementScreen.setVisible(true);
     }
 
-    public void openSummaryForm() {
-        SummaryForm summaryForm = new SummaryForm(this);
-        summaryForm.setVisible(true);
+    protected void openIncidentForm() {
+        IncidentForm incidentReportScreen = new IncidentForm(BarrioSeguro.this);
+        incidentReportScreen.setVisible(true);
     }
 
-    public void openAnnouncementForm() {
-        AnnouncementForm announcementForm = new AnnouncementForm(this);
-        announcementForm.setVisible(true);
+    protected void openSummaryForm() {
+        SummaryForm incidentSummaryScreen = new SummaryForm(BarrioSeguro.this);
+        incidentSummaryScreen.setVisible(true);
     }
-
-    // Optionally: central DB or utility access (if you prefer).
-    // For example, you could unify repeated code or queries here.
 }

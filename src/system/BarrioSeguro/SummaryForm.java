@@ -16,8 +16,12 @@ import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.SQLException;
+
+import java.text.SimpleDateFormat;
+
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JLayeredPane;
@@ -34,18 +38,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-import java.text.SimpleDateFormat;
-
-import java.util.Date;
-
-/**
- * Displays summary of incidents or other overall reports.
- * Inherits from BaseForm to reduce repeated code.
- */
 public class SummaryForm extends BaseForm {
 
-    private JTable incident_table;
-    private JTextField searchtf;
+    private JTable incidentTable;
+    private JTextField searchTextField;
 
     public SummaryForm(BarrioSeguro appController) {
         super(appController);
@@ -55,204 +51,185 @@ public class SummaryForm extends BaseForm {
     }
 
     private void initialize() {
-        JLayeredPane layeredPane = new JLayeredPane();
-        setContentPane(layeredPane);
+        JLayeredPane summaryPane = new JLayeredPane();
+        setContentPane(summaryPane);
 
-         addBackgroundImage(layeredPane);
-
-         addDashboardPanel(layeredPane);
-
-         addWelcomePanel(layeredPane);
+        addBackgroundImage(summaryPane);
+        addDashboardPanel(summaryPane);
+        addSummaryPanel(summaryPane);
     }
 
-    private void addWelcomePanel(JLayeredPane layeredPane) {
-      JPanel welcomePanel = new JPanel() {
-          @Override
-          protected void paintComponent(Graphics g) {
-              super.paintComponent(g);
-              Graphics2D g2d = (Graphics2D) g;
-              g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-              g2d.setColor(getBackground());
-              g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 75, 75);
-          }
-      };
-      welcomePanel.setBounds(480, 185, 895, 722);
-      welcomePanel.setBackground(new Color(102, 77, 77, 178));
-      welcomePanel.setLayout(null);
-      welcomePanel.setOpaque(false);
+    private void addSummaryPanel(JLayeredPane summaryPane) {
+        JPanel summaryPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics paintGraphics) {
+                super.paintComponent(paintGraphics);
+                Graphics2D paintGraphicsWith2D = (Graphics2D) paintGraphics;
+                paintGraphicsWith2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                paintGraphicsWith2D.setColor(getBackground());
+                paintGraphicsWith2D.fillRoundRect(0, 0, getWidth(), getHeight(), 75, 75);
+            }
+        };
+        summaryPanel.setBounds(480, 185, 895, 722);
+        summaryPanel.setBackground(new Color(102, 77, 77, 178));
+        summaryPanel.setLayout(null);
+        summaryPanel.setOpaque(false);
 
-      layeredPane.add(welcomePanel, JLayeredPane.PALETTE_LAYER);
+        summaryPane.add(summaryPanel, JLayeredPane.PALETTE_LAYER);
 
-      incident_table = new JTable() {
-          @Override
-          public boolean isCellEditable(int row, int column) {
-              return false;  // Disable editing for all cells
-          }
-      };
-      incident_table.setBounds(36, 38, 826, 581);
-      welcomePanel.add(incident_table);
+        incidentTable = new JTable() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        incidentTable.setBounds(36, 38, 826, 581);
+        summaryPanel.add(incidentTable);
 
-      String[] columnNames = {
-          "First Name", "Last Name", "Date", "Progress"
-      };
+        String[] columnNames = {
+            "First Name", "Last Name", "Date", "Progress"
+        };
 
-      // 4 columns
-      DefaultTableModel model = new DefaultTableModel(null, columnNames);
-      incident_table.setModel(model);
+        DefaultTableModel summaryTableModel = new DefaultTableModel(null, columnNames);
+        incidentTable.setModel(summaryTableModel);
 
-      // Add the table to a JScrollPane to enable scrolling
-      JScrollPane scrollPane = new JScrollPane(incident_table);
-      scrollPane.setBounds(36, 80, 826, 561); // Set size same as table
-      welcomePanel.add(scrollPane); // Add the scrollPane
+        JScrollPane scrollSummaryTable = new JScrollPane(incidentTable);
+        scrollSummaryTable.setBounds(36, 80, 826, 561);
+        summaryPanel.add(scrollSummaryTable);
 
-      // adjust column widths
-      incident_table.getColumnModel().getColumn(0).setPreferredWidth(150); // Set width for First Name column
-      incident_table.getColumnModel().getColumn(1).setPreferredWidth(150); // Set width for Last Name column
-      incident_table.getColumnModel().getColumn(2).setPreferredWidth(150); // Set width for Date column
-      incident_table.getColumnModel().getColumn(3).setPreferredWidth(150); // Set width for Progress column
+        incidentTable.getColumnModel().getColumn(0).setPreferredWidth(150);
+        incidentTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+        incidentTable.getColumnModel().getColumn(2).setPreferredWidth(150);
+        incidentTable.getColumnModel().getColumn(3).setPreferredWidth(150);
 
-      searchtf = new JTextField("Search"); 
-      searchtf.setToolTipText("");
-      searchtf.setHorizontalAlignment(SwingConstants.LEFT);
-      searchtf.setForeground(Color.LIGHT_GRAY);
-      searchtf.setFont(new Font("SansSerif", Font.PLAIN, 12));
-      searchtf.setBorder(new EmptyBorder(10, 10, 10, 10));
-      searchtf.setBounds(36, 34, 216, 37);
-      
-      searchtf.addFocusListener(new FocusListener() {
-          @Override
-          public void focusGained(FocusEvent e) {
-              if (searchtf.getText().equals("Search")) { 
-                  searchtf.setText(""); 
-                  searchtf.setForeground(Color.BLACK);
-              }
-          }
+        searchTextField = new JTextField("Search"); 
+        searchTextField.setToolTipText("");
+        searchTextField.setHorizontalAlignment(SwingConstants.LEFT);
+        searchTextField.setForeground(Color.LIGHT_GRAY);
+        searchTextField.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        searchTextField.setBorder(new EmptyBorder(10, 10, 10, 10));
+        searchTextField.setBounds(36, 34, 216, 37);
+        
+        searchTextField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent eventForSearchField) {
+                if (searchTextField.getText().equals("Search")) { 
+                    searchTextField.setText(""); 
+                    searchTextField.setForeground(Color.BLACK);
+                }
+            }
 
-          @Override
-          public void focusLost(FocusEvent e) {
-              if (searchtf.getText().isEmpty()) {
-                  searchtf.setText("Search"); 
-                  searchtf.setForeground(Color.LIGHT_GRAY);
-              }
-          }
-      });
-      searchtf.addKeyListener(new KeyAdapter() {
-          @Override
-          public void keyReleased(KeyEvent e) {
-              String searchQuery = searchtf.getText().trim().toLowerCase(); // Get the search query and convert to lowercase
-              filterTable(searchQuery); // Call the method to filter the table
-          }
-      });
-      welcomePanel.add(searchtf);
-      
-      JButton viewbtn = new JButton("VIEW");
-      viewbtn.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-              // Get the selected row from the table
-              int selectedRow = incident_table.getSelectedRow();
-              if (selectedRow != -1) {
-                  // Retrieve only the visible data (columns 0 to 3)
-                  String firstName = (String) incident_table.getValueAt(selectedRow, 0);
-                  String lastName = (String) incident_table.getValueAt(selectedRow, 1);
-                  String dateString = (String) incident_table.getValueAt(selectedRow, 2); 
-                  String progress = (String) incident_table.getValueAt(selectedRow, 3);
+            @Override
+            public void focusLost(FocusEvent eventForSearchField) {
+                if (searchTextField.getText().isEmpty()) {
+                    searchTextField.setText("Search"); 
+                    searchTextField.setForeground(Color.LIGHT_GRAY);
+                }
+            }
+        });
+        searchTextField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent eventKeyForSearchField) {
+                String searchQuery = searchTextField.getText().trim().toLowerCase();
+                filterTable(searchQuery);
+            }
+        });
+        summaryPanel.add(searchTextField);
+        
+        JButton viewBtn = new JButton("VIEW");
+        viewBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent eventForViewBtn) {
+                int selectedRow = incidentTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    String firstName = (String) incidentTable.getValueAt(selectedRow, 0);
+                    String lastName = (String) incidentTable.getValueAt(selectedRow, 1);
+                    String dateString = (String) incidentTable.getValueAt(selectedRow, 2); 
+                    String progress = (String) incidentTable.getValueAt(selectedRow, 3);
 
-                  // Convert the date string into java.sql.Date
-                  SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                  java.sql.Date date = null;
-                  try {
-                      java.util.Date utilDate = sdf.parse(dateString);
-                      date = new java.sql.Date(utilDate.getTime());  // Convert to java.sql.Date for SQL query
-                  } catch (Exception ex) {
-                      JOptionPane.showMessageDialog(null, "Invalid date format.");
-                      return;
-                  }
+                    SimpleDateFormat formatDateConverter = new SimpleDateFormat("dd/MM/yyyy");
+                    java.sql.Date giveDate = null;
+                    try {
+                        java.util.Date convertedDate = formatDateConverter.parse(dateString);
+                        giveDate = new java.sql.Date(convertedDate.getTime());
+                    } catch (Exception handleDateException) {
+                        JOptionPane.showMessageDialog(null, "Invalid date format.");
+                        return;
+                    }
 
-                  // Now, fetch all the data from the database to pass to CrimeForm
-                  String description = "";
-                  String typeOfIncident = "";
+                    String description = "";
+                    String typeOfIncident = "";
 
-                  try (Connection conn = getConnection()) {
-                      String query = "SELECT incident_description, incident_type FROM IncidentDB " +
-                                     "WHERE incident_firstName = ? AND incident_lastName = ? AND incident_date = ?";
+                    try (Connection connectSummary = getConnection()) {
+                        String query = "SELECT incident_description, incident_type FROM IncidentDB " +
+                                        "WHERE incident_firstName = ? AND incident_lastName = ? AND incident_date = ?";
 
-                      try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-                          pstmt.setString(1, firstName);
-                          pstmt.setString(2, lastName);
-                          pstmt.setDate(3, date);  // Use the java.sql.Date object here
-                          ResultSet rs = pstmt.executeQuery();
+                        try (PreparedStatement statementSummary = connectSummary.prepareStatement(query)) {
+                            statementSummary.setString(1, firstName);
+                            statementSummary.setString(2, lastName);
+                            statementSummary.setDate(3, giveDate);
+                            ResultSet resultSummary = statementSummary.executeQuery();
 
-                          if (rs.next()) {
-                              description = rs.getString("incident_description");
-                              typeOfIncident = rs.getString("incident_type");
-                          } else {
-                              JOptionPane.showMessageDialog(null, "No matching record found.");
-                          }
-                      }
-                  } catch (SQLException ex) {
-                      ex.printStackTrace();
-                  }
+                            if (resultSummary.next()) {
+                                description = resultSummary.getString("incident_description");
+                                typeOfIncident = resultSummary.getString("incident_type");
+                            } else {
+                                JOptionPane.showMessageDialog(null, "No matching record found.");
+                            }
+                        }
+                    } catch (SQLException handleViewDatabaseException) {
+                        handleViewDatabaseException.printStackTrace();
+                    }
 
-                  // Create an instance of CrimeForm
-                  CrimeForm crimeForm = new CrimeForm(appController);
+                    IncidentForm createIncidentForm = new IncidentForm(appController);
 
-                  // Pass the data to CrimeForm
-                  crimeForm.fillData(firstName, "", lastName, "", dateString, progress, description, typeOfIncident);
+                    createIncidentForm.fillData(firstName, "", lastName, "", dateString, progress, description, typeOfIncident);
 
-                  // Show CrimeForm
-                  crimeForm.setVisible(true);
+                    createIncidentForm.setVisible(true);
 
-                  // Close the current SummaryForm
-                  dispose();
-              }
-          }
-      });
-      viewbtn.setFont(new Font("Times New Roman", Font.BOLD, 14));
-      viewbtn.setBounds(326, 664, 160, 37);
-      welcomePanel.add(viewbtn);
+                    dispose();
+                }
+            }
+        });
+        viewBtn.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        viewBtn.setBounds(326, 664, 160, 37);
+        summaryPanel.add(viewBtn);
+    }
+    
+    private void filterTable(String searchQuery) {
+        DefaultTableModel filterTableModel = (DefaultTableModel) incidentTable.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(filterTableModel);
+        incidentTable.setRowSorter(sorter);
 
-  }
-  
-  private void filterTable(String searchQuery) {
-      DefaultTableModel model = (DefaultTableModel) incident_table.getModel();
-      TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-      incident_table.setRowSorter(sorter);
+        if (searchQuery.isEmpty() || searchQuery.equalsIgnoreCase("search")) {
+            sorter.setRowFilter(null);
+        } else {
+            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchQuery));
+        }
+    }
+    
+    private void loadIncidentData() {
+        String query = "SELECT incident_firstName, incident_lastName, incident_date, incident_progress " +
+                        "FROM IncidentDB";
+        
+        try (Connection connectLoadIncident = getConnection()) {
+            Statement statementLoadIncident = connectLoadIncident.createStatement();
+            ResultSet resultLoacIncident = statementLoadIncident.executeQuery(query);
 
-      if (searchQuery.isEmpty() || searchQuery.equalsIgnoreCase("search")) {
-          sorter.setRowFilter(null); // Show all rows if the search query is empty
-      } else {
-          sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchQuery)); // Case-insensitive filtering
-      }
-  }
-  
-  private void loadIncidentData() {
-      // Query to fetch only the required columns
-      String query = "SELECT incident_firstName, incident_lastName, incident_date, incident_progress " +
-                     "FROM IncidentDB";
-      
-      try (Connection conn = getConnection()) {
-          Statement stmt = conn.createStatement();
-          ResultSet rs = stmt.executeQuery(query);
+            DefaultTableModel loadTableModel = (DefaultTableModel) incidentTable.getModel();
+            SimpleDateFormat formatDateConverter = new SimpleDateFormat("dd/MM/yyyy");
 
-          DefaultTableModel model = (DefaultTableModel) incident_table.getModel();
-          SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            while (resultLoacIncident.next()) {
+                String firstName = resultLoacIncident.getString("incident_firstName");
+                String lastName = resultLoacIncident.getString("incident_lastName");
+                Date incidentDate = resultLoacIncident.getDate("incident_date");
+                String progress = resultLoacIncident.getString("incident_progress");
 
-          // Loop through the result set and add data to the table
-          while (rs.next()) {
-              // Retrieve only the 4 required columns
-              String firstName = rs.getString("incident_firstName");
-              String lastName = rs.getString("incident_lastName");
-              Date date = rs.getDate("incident_date");
-              String progress = rs.getString("incident_progress");
+                String formattedDate = formatDateConverter.format(incidentDate);
 
-              // Format the date in dd/MM/yyyy
-              String formattedDate = sdf.format(date);
-
-              // Add a row with the 4 required fields
-              model.addRow(new Object[]{firstName, lastName, formattedDate, progress});
-          }
-      } catch (SQLException e) {
-          e.printStackTrace();
-      }
-  }
+                loadTableModel.addRow(new Object[]{firstName, lastName, formattedDate, progress});
+            }
+        } catch (SQLException handleDatabaseException) {
+            handleDatabaseException.printStackTrace();
+        }
+    }
 }
