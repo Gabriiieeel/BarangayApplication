@@ -376,20 +376,20 @@ public class ResidentForm extends BaseForm {
                     String updatedEmail = emailField.getText().trim();
 
                     // Check if some required fields are empty
-                    if (firstName.isEmpty() || lastName.isEmpty() || address.isEmpty() || dateOfBirth.isEmpty() || contact.isEmpty() || email.isEmpty()) {
+                    if (updatedFirstName.isEmpty() || updatedLastName.isEmpty() || updatedAddress.isEmpty() || updatedDob.isEmpty() || updatedContact.isEmpty() || updatedEmail.isEmpty()) {
                         // Show a warning if needed
                         JOptionPane.showMessageDialog(null, "Please fill in all required fields.", "Validation Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
                     // Contact must be exactly 11 digits, or it’s invalid
-                    if (!contact.matches("\\d{11}")) {
+                    if (!updatedContact.matches("\\d{11}")) {
                         JOptionPane.showMessageDialog(null, "Contact number must be 11 digits.", "Validation Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
                     // Date must follow dd/mm/yyyy
-                    if (!dateOfBirth.matches("\\d{2}/\\d{2}/\\d{4}")) {
+                    if (!updatedDob.matches("\\d{2}/\\d{2}/\\d{4}")) {
                         JOptionPane.showMessageDialog(null, "Date of Birth must be in the format dd/mm/yyyy.", "Validation Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
