@@ -453,7 +453,7 @@ public class ResidentForm extends BaseForm {
                 
                 // Proceed based on the user's response
                 if (printConfirm == JOptionPane.YES_OPTION) {
-                    JOptionPane.showMessageDialog(null, "Printed!", "Print Confirmation", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Processing to print resident's ID. Please wait!", "Print Confirmation", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(null, "Print action canceled.", "Print Cancellation", JOptionPane.INFORMATION_MESSAGE);
                 }
