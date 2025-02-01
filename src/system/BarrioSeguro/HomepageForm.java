@@ -1,5 +1,9 @@
+// This line says our file is part of a package called "system.BarrioSeguro"  
+// Think of a package as a folder or grouping for related classes
 package system.BarrioSeguro;
 
+// These lines let us use Java’s color, font, graphics features, images, labels,  
+// layered panes, panels, and alignment options
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -12,57 +16,94 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+// "HomepageForm" is a class that extends "BaseForm"  
+// "extends" means "HomepageForm" gets tools and abilities from "BaseForm"
 public class HomepageForm extends BaseForm {
 
+    // This is the constructor: it runs when we make a new "HomepageForm" object  
+    // It calls the parent class constructor and sets the page title, then calls "initialize"
     public HomepageForm(BarrioSeguro appController) {
         super(appController);
         setTitle("BarrioSeguro - Homepage");
         initialize();
     }
 
+    // This private method sets up everything on the homepage  
+    // It makes a layered area and adds a background, dashboard, and welcome panel
     private void initialize() {
-        JLayeredPane homepagePane = new JLayeredPane(); // Create a layered pane for the homepage
+        // Create a new layered pane to hold our components  
+        // Layered panes let us stack panels on top of the background
+        JLayeredPane homepagePane = new JLayeredPane(); 
+        // Tells Java that our main window content is this layered pane
         setContentPane(homepagePane);
 
-        addBackgroundImage(homepagePane); // Add background image to the pane
-        addDashboardPanel(homepagePane); // Add dashboard panel to the pane
-        addWelcomePanel(homepagePane); // Add welcome panel to the pane
+        // Use a method from "BaseForm" to show the background image
+        addBackgroundImage(homepagePane);
+        // Also from "BaseForm," adding the left-hand dashboard panel
+        addDashboardPanel(homepagePane);
+        // A custom panel that says "Welcome!" and shows a big image
+        addWelcomePanel(homepagePane);
     }
 
+    // This method creates and adds a panel that says "Welcome!" and shows an app image  
+    // It also has a label for "Barangay Monitoring and Incident Reporting System"
     private void addWelcomePanel(JLayeredPane homepagePane) {
+        // Make a JPanel with a custom shape (rounded corners) using "paintComponent"
         JPanel welcomePanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics paintGraphics) {
+                // Calls the usual painting code
                 super.paintComponent(paintGraphics);
                 Graphics2D paintGraphicsWith2D = (Graphics2D) paintGraphics;
-                paintGraphicsWith2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); // Enable anti-aliasing for smoother graphics
+                // Make graphics edges smoother
+                paintGraphicsWith2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                // Fill the panel with its background color
                 paintGraphicsWith2D.setColor(getBackground());
-                paintGraphicsWith2D.fillRoundRect(0, 0, getWidth(), getHeight(), 75, 75); // Draw a rounded rectangle as the background
+                // Draw a round rectangle matching our panel’s size
+                paintGraphicsWith2D.fillRoundRect(0, 0, getWidth(), getHeight(), 75, 75);
             }
         };
-        welcomePanel.setBounds(480, 185, 895, 722); // Set the position and size of the welcome panel
-        welcomePanel.setBackground(new Color(102, 77, 77, 178)); // Set the background color with transparency
-        welcomePanel.setLayout(null); // Use absolute positioning
-        welcomePanel.setOpaque(false); // Make the panel transparent
+        // Place the panel on the screen at x=480, y=185; width=895, height=722
+        welcomePanel.setBounds(480, 185, 895, 722);
+        // Give it a semi-transparent dark background color (R=102, G=77, B=77, Alpha=178)
+        welcomePanel.setBackground(new Color(102, 77, 77, 178));
+        // Use no automatic layout manager, so we can position stuff ourselves
+        welcomePanel.setLayout(null);
+        // Make sure we can see the panel’s transparency
+        welcomePanel.setOpaque(false);
 
-        homepagePane.add(welcomePanel, JLayeredPane.PALETTE_LAYER); // Add welcome panel to the layered pane
+        // Add the panel on top of other layers  
+        // "PALETTE_LAYER" means it’s in front of the background
+        homepagePane.add(welcomePanel, JLayeredPane.PALETTE_LAYER);
         
-        JLabel lblWelcome = new JLabel("Welcome!"); // Create a welcome label
-        lblWelcome.setHorizontalAlignment(SwingConstants.CENTER); // Center-align the text
-        lblWelcome.setForeground(Color.WHITE); // Set the text color to white
-        lblWelcome.setFont(new Font("Times New Roman", Font.BOLD, 47)); // Set the font style and size
-        lblWelcome.setBounds(305, 25, 272, 106); // Set the position and size of the label
-        welcomePanel.add(lblWelcome); // Add the welcome label to the welcome panel
+        // This label says "Welcome!" in the center, large white text
+        JLabel lblWelcome = new JLabel("Welcome!");
+        lblWelcome.setHorizontalAlignment(SwingConstants.CENTER);
+        lblWelcome.setForeground(Color.WHITE);
+        lblWelcome.setFont(new Font("Times New Roman", Font.BOLD, 47));
+        // Position the label at (305, 25) with width=272 and height=106
+        lblWelcome.setBounds(305, 25, 272, 106);
+        // Add it onto the welcomePanel
+        welcomePanel.add(lblWelcome);
         
-        JLabel logoLabel = new JLabel(new ImageIcon("Visuals/databaseLogoIcon.png")); // Create a label with an image icon
-        logoLabel.setBounds(166, 123, 551, 529); // Set the position and size of the image label
-        welcomePanel.add(logoLabel); // Add the image label to the welcome panel
+        // A label to hold an image from "databaseLogoIcon.png"
+        JLabel logoLabel = new JLabel(new ImageIcon("Visuals/databaseLogoIcon.png"));
+        // Position this image in the center area of the panel
+        logoLabel.setBounds(166, 123, 551, 529);
+        // Add the logo to the welcomePanel
+        welcomePanel.add(logoLabel);
         
-        JLabel lblBrgyMonitorIncidentReport = new JLabel("Barangay Monitoring and Incident Reporting System"); // Create a label for the system name
-        lblBrgyMonitorIncidentReport.setHorizontalAlignment(SwingConstants.CENTER); // Center-align the text
-        lblBrgyMonitorIncidentReport.setForeground(Color.WHITE); // Set the text color to white
-        lblBrgyMonitorIncidentReport.setFont(new Font("Times New Roman", Font.BOLD, 27)); // Set the font style and size
-        lblBrgyMonitorIncidentReport.setBounds(73, 619, 752, 92); // Set the position and size of the label
-        welcomePanel.add(lblBrgyMonitorIncidentReport); // Add the system name label to the welcome panel
+        // Another label that spells out the full system name for clarity
+        JLabel lblBrgyMonitorIncidentReport = new JLabel("Barangay Monitoring and Incident Reporting System");
+        // Align its text in the center
+        lblBrgyMonitorIncidentReport.setHorizontalAlignment(SwingConstants.CENTER);
+        // Make the text color white
+        lblBrgyMonitorIncidentReport.setForeground(Color.WHITE);
+        // Use Times New Roman, bold, size 27
+        lblBrgyMonitorIncidentReport.setFont(new Font("Times New Roman", Font.BOLD, 27));
+        // Position the label near the bottom of the panel
+        lblBrgyMonitorIncidentReport.setBounds(73, 619, 752, 92);
+        // Add it to the panel
+        welcomePanel.add(lblBrgyMonitorIncidentReport);
     }
 }
