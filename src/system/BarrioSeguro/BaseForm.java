@@ -5,12 +5,17 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.RenderingHints;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import java.io.File;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -23,21 +28,22 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import javax.swing.border.EmptyBorder;
 
 import javax.swing.plaf.basic.BasicButtonUI;
-
-import system.BarrioSeguro.BarrioSeguro;
 
 public abstract class BaseForm extends JFrame {
 
     protected static final String DATABASE_PATH = "jdbc:ucanaccess://Database/BarrioSeguroDB.accdb";
 
+    protected BarrioSeguro appController;
+
     protected final Color DEFAULT_COLOR = new Color(220, 20, 60);
     protected final Color CLICK_COLOR = new Color(180, 0, 40);
     protected final Color HOVER_COLOR = new Color(200, 0, 50);
-
-
-    protected BarrioSeguro appController;
 
     public BaseForm(BarrioSeguro accessAppControl) {
         appController = accessAppControl;
@@ -46,6 +52,18 @@ public abstract class BaseForm extends JFrame {
         setBounds(100, 100, 1440, 1024);
         setResizable(false);
         setLocationRelativeTo(null);
+        
+        setApplicationIcon();
+    }
+
+    private void setApplicationIcon() {
+        File iconFile = new File("Visuals/logoIcon.png");
+        if (iconFile.exists()) {
+            ImageIcon appIcon = new ImageIcon(iconFile.getAbsolutePath());
+            setIconImage(appIcon.getImage());
+        } else {
+            System.err.println("Error: Window icon not found at " + iconFile.getAbsolutePath());
+        }
     }
 
     protected Connection getConnection() throws SQLException {
@@ -83,7 +101,7 @@ public abstract class BaseForm extends JFrame {
     private void addLogoToDashboard(JPanel dashboardPanel) {
         ImageIcon logoImage = new ImageIcon("Visuals/logoIcon.png");
         JLabel logoLabel = new JLabel(logoImage);
-        logoLabel.setBounds(10, 33, 150, 150); 
+        logoLabel.setBounds(18, 33, 150, 150); 
         dashboardPanel.setLayout(null);
         dashboardPanel.add(logoLabel);
     }
@@ -92,7 +110,7 @@ public abstract class BaseForm extends JFrame {
         JLabel logonamelabel = new JLabel("BarrioSeguro");
         logonamelabel.setForeground(Color.WHITE);
         logonamelabel.setFont(new Font("Times New Roman", Font.BOLD, 39)); 
-        logonamelabel.setBounds(170, 69, 237, 78);
+        logonamelabel.setBounds(178, 69, 237, 78);
         dashboardPanel.add(logonamelabel);
     }
 
@@ -261,5 +279,85 @@ public abstract class BaseForm extends JFrame {
         dispose();
         LoginForm login = new LoginForm(appController);
         login.setVisible(true);
+    }
+
+    protected JTextField createRoundedTextField(String text, int cornerRadius) {
+        JTextField givenTextField = new JTextField(text) {
+            @Override
+            protected void paintComponent(Graphics paintGraphics) {
+                Graphics2D paintGraphics2D = (Graphics2D) paintGraphics.create();
+                paintGraphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                paintGraphics2D.setColor(Color.WHITE);
+                paintGraphics2D.fillRoundRect(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius);
+                super.paintComponent(paintGraphics);
+                paintGraphics2D.dispose();
+            }
+
+            @Override
+            protected void paintBorder(Graphics paintGraphics) {
+                Graphics2D paintGraphics2D = (Graphics2D) paintGraphics.create();
+                paintGraphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                paintGraphics2D.setColor(Color.GRAY);
+                paintGraphics2D.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, cornerRadius, cornerRadius);
+                paintGraphics2D.dispose();
+            }
+        };
+        givenTextField.setOpaque(false);
+        givenTextField.setBorder(new EmptyBorder(10, 20, 10, 20));
+        return givenTextField;
+    }
+
+    public JTextArea createRoundedTextArea(String placeholder, int width, int height) {
+        JTextArea givenTextArea = new JTextArea(placeholder) {
+            @Override
+            protected void paintComponent(Graphics paintGraphics) {
+                Graphics2D paintGraphics2D = (Graphics2D) paintGraphics.create();
+                paintGraphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                paintGraphics2D.setColor(getBackground());
+                paintGraphics2D.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
+                paintGraphics2D.dispose();
+
+                super.paintComponent(paintGraphics);
+            }
+
+            @Override
+            protected void paintBorder(Graphics paintGraphics) {
+                Graphics2D paintGraphics2D = (Graphics2D) paintGraphics.create();
+                paintGraphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                paintGraphics2D.setColor(Color.GRAY);
+                paintGraphics2D.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 30, 30);
+                paintGraphics2D.dispose();
+            }
+        };
+
+        givenTextArea.setOpaque(false);
+        givenTextArea.setBackground(new Color(255, 244, 244));
+        givenTextArea.setForeground(new Color(0,0,0,50));
+        givenTextArea.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        givenTextArea.setBorder(new EmptyBorder(20, 20, 20, 20));
+        givenTextArea.setBounds(51, 136, width, height);
+        givenTextArea.setWrapStyleWord(true);
+        givenTextArea.setLineWrap(true);
+        givenTextArea.setMargin(new Insets(20, 20, 20, 20));
+
+        givenTextArea.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent eventFocusTextArea) {
+                if (givenTextArea.getText().equals(placeholder)) {
+                    givenTextArea.setText("");
+                    givenTextArea.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent eventFocusTextArea) {
+                if (givenTextArea.getText().isEmpty()) {
+                    givenTextArea.setText(placeholder);
+                    givenTextArea.setForeground(Color.LIGHT_GRAY);
+                }
+            }
+        });
+
+        return givenTextArea;
     }
 }

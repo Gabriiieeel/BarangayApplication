@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Insets;
 import java.awt.RenderingHints;
 
 import java.awt.event.ActionEvent;
@@ -75,10 +74,11 @@ public class AnnouncementForm extends BaseForm {
 
         announcePane.add(announcePanel, JLayeredPane.PALETTE_LAYER);
 
-        subjectTextField = new JTextField("Subject");
+        subjectTextField = createRoundedTextField("Subject", 25);
         subjectTextField.setToolTipText("");
         subjectTextField.setHorizontalAlignment(SwingConstants.LEFT);
-        subjectTextField.setForeground(Color.LIGHT_GRAY);
+        subjectTextField.setForeground(new Color(0,0,0,50));
+        subjectTextField.setBackground(new Color(255, 244, 244));
         subjectTextField.setFont(new Font("SansSerif", Font.PLAIN, 25));
         subjectTextField.setBorder(new EmptyBorder(10, 20, 10, 20));
         subjectTextField.setBounds(51, 50, 798, 53);
@@ -102,44 +102,11 @@ public class AnnouncementForm extends BaseForm {
         });
 
         announcePanel.add(subjectTextField);
-     // Message input field with placeholder functionality
-        messageTextField = new JTextArea("Enter a message...") {
-            @Override
-            protected void paintComponent(Graphics paintGraphics) {
-                super.paintComponent(paintGraphics);
-                if (getText().isEmpty() && getForeground() == Color.LIGHT_GRAY) {
-                    paintGraphics.setColor(getForeground());
-                    paintGraphics.drawString("Enter a message...", 10, 20); 
-                }
-            }
-        };
-        messageTextField.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        messageTextField.setForeground(Color.LIGHT_GRAY);
-        messageTextField.setBounds(51, 136, 798, 323);
-        messageTextField.setWrapStyleWord(true);
-        messageTextField.setLineWrap(true);
 
-        messageTextField.setMargin(new Insets(20, 20, 20, 20));
-
-        messageTextField.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent eventForMessageField) {
-                if (messageTextField.getText().equals("Enter a message...")) { 
-                    messageTextField.setText("");
-                    messageTextField.setForeground(Color.BLACK);
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent eventForMessageField) {
-                if (messageTextField.getText().isEmpty()) {  
-                    messageTextField.setText("Enter a message..."); 
-                    messageTextField.setForeground(Color.LIGHT_GRAY);  
-                }
-            }
-        });
-
+        // Message input field with placeholder functionality
+        messageTextField = createRoundedTextArea("Enter a message...", 798, 323);
         announcePanel.add(messageTextField);
+
         // Button to send email
         JButton emailBtn = new JButton("Send to Email");
         styleRoundedButton(emailBtn);
@@ -152,9 +119,10 @@ public class AnnouncementForm extends BaseForm {
                 }
             }
         });
-        emailBtn.setBounds(569, 497, 177, 55);
+        emailBtn.setBounds(555, 497, 177, 55);
         announcePanel.add(emailBtn);
-     // Button to send SMS (Not implemented, placeholder only)
+
+        // Button to send SMS (Not implemented, placeholder only)
         JButton smsBtn = new JButton("Send to SMS");
         styleRoundedButton(smsBtn);
         smsBtn.addActionListener(new ActionListener() {
@@ -166,18 +134,18 @@ public class AnnouncementForm extends BaseForm {
                 }
             }
         });
-        smsBtn.setBounds(181, 497, 177, 55);
+        smsBtn.setBounds(167, 497, 177, 55);
         announcePanel.add(smsBtn);
     }
 
     private boolean validateFields() {
     	// Ensures fields are not empty before sending email or SMS
         if (subjectTextField.getText().equals("Subject") || subjectTextField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Subject is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(AnnouncementForm.this, "Subject is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         if (messageTextField.getText().equals("Enter a message...") || messageTextField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Message is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(AnnouncementForm.this, "Message is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
@@ -233,6 +201,7 @@ public class AnnouncementForm extends BaseForm {
             resultSendEmail.close();
             statementSendEmail.close();
             connectSendEmail.close();
+            
             JOptionPane.showMessageDialog(AnnouncementForm.this, "Emails sent successfully!");
 
         } catch (Exception handleEmailException) {

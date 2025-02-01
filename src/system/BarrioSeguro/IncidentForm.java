@@ -33,7 +33,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 public class IncidentForm extends BaseForm {
-	//for incident recording
+	// for incident recording
     private JTextField incidentFirstName;
     private JTextField incidentMidName;
     private JTextField incidentLastName;
@@ -58,6 +58,7 @@ public class IncidentForm extends BaseForm {
         addIncidentPanel(incidentPane);
     }
 
+    @SuppressWarnings("unused")
     private void addIncidentPanel(JLayeredPane incidentPane) {
         JPanel incidentPanel = new JPanel() {
             @Override
@@ -78,7 +79,7 @@ public class IncidentForm extends BaseForm {
         incidentFirstName = new JTextField("");
         incidentFirstName.setToolTipText("");
         incidentFirstName.setHorizontalAlignment(SwingConstants.LEFT);
-        incidentFirstName.setForeground(new Color(0, 0, 0));
+        incidentFirstName.setBackground(new Color(255, 244, 244));
         incidentFirstName.setFont(new Font("SansSerif", Font.PLAIN, 12));
         incidentFirstName.setBorder(new EmptyBorder(10, 10, 10, 10));
         incidentFirstName.setBounds(40, 80, 216, 36);
@@ -88,7 +89,7 @@ public class IncidentForm extends BaseForm {
         incidentMidName = new JTextField("");
         incidentMidName.setToolTipText("");
         incidentMidName.setHorizontalAlignment(SwingConstants.LEFT);
-        incidentMidName.setForeground(new Color(0, 0, 0));
+        incidentMidName.setBackground(new Color(255, 244, 244));
         incidentMidName.setFont(new Font("SansSerif", Font.PLAIN, 12));
         incidentMidName.setBorder(new EmptyBorder(10, 10, 10, 10));
         incidentMidName.setBounds(40, 142, 216, 36);
@@ -97,7 +98,7 @@ public class IncidentForm extends BaseForm {
         incidentLastName = new JTextField("");
         incidentLastName.setToolTipText("");
         incidentLastName.setHorizontalAlignment(SwingConstants.LEFT);
-        incidentLastName.setForeground(new Color(0, 0, 0));
+        incidentLastName.setBackground(new Color(255, 244, 244));
         incidentLastName.setFont(new Font("SansSerif", Font.PLAIN, 12));
         incidentLastName.setBorder(new EmptyBorder(10, 10, 10, 10));
         incidentLastName.setBounds(40, 204, 216, 36);
@@ -106,7 +107,7 @@ public class IncidentForm extends BaseForm {
         incidentSuffixName = new JTextField("");
         incidentSuffixName.setToolTipText("");
         incidentSuffixName.setHorizontalAlignment(SwingConstants.LEFT);
-        incidentSuffixName.setForeground(new Color(0, 0, 0));
+        incidentSuffixName.setBackground(new Color(255, 244, 244));
         incidentSuffixName.setFont(new Font("SansSerif", Font.PLAIN, 12));
         incidentSuffixName.setBorder(new EmptyBorder(10, 10, 10, 10));
         incidentSuffixName.setBounds(40, 266, 216, 36);
@@ -115,13 +116,14 @@ public class IncidentForm extends BaseForm {
         incidentDate = new JTextField("");
         incidentDate.setToolTipText("");
         incidentDate.setHorizontalAlignment(SwingConstants.LEFT);
-        incidentDate.setForeground(new Color(0, 0, 0));
+        incidentDate.setBackground(new Color(255, 244, 244));
         incidentDate.setFont(new Font("SansSerif", Font.PLAIN, 12));
         incidentDate.setBorder(new EmptyBorder(10, 10, 10, 10));
         incidentDate.setBounds(40, 328, 216, 36);
         incidentPanel.add(incidentDate);
         
         incidentType = new JComboBox<String>();
+        incidentType.setBackground(new Color(255, 244, 244));
         incidentType.setModel(new DefaultComboBoxModel<String>(new String[] {"Assault", "Burglary", "Domestic Violence", "Drug Possession", "Fraud", "Harassment", "Physical Abuse", "Theft", "Traffic Violation", "Vandalism", "Arson", "Robbery", "Homicide", "Kidnapping", "Shoplifting", "Identity Theft", "Embezzlement", "Money Laundering", "Stalking", "Sexual Assault", "Child Abuse", "Human Trafficking", "Battery", "Bribery", "Extortion", "Counterfeiting", "Piracy", "Public Intoxication", "Rape", "Prostitution", "Weapons Possession", "Animal Cruelty", "Blackmail", "Tax Evasion", "Illegal Gambling", "Wire Fraud", "Trespassing", "Insurance Fraud", "Unlawful Detention", "Obstruction of Justice", "Racketeering", "Manslaughter", "Money Counterfeiting", "Corruption", "Illegal Search and Seizure", "Forgery", "Drug Trafficking", "Terrorism", "Public Disorder", "Bribing a Witness", "Reckless Driving", "Destruction of Property", "Coercion"}));
         incidentType.setBounds(40, 390, 216, 36);
         incidentPanel.add(incidentType);
@@ -131,18 +133,9 @@ public class IncidentForm extends BaseForm {
         incidentProgress.setBounds(40, 452, 216, 36);
         incidentPanel.add(incidentProgress);
         
-        incidentDescription = new JTextArea("Enter a message...") {
-            @Override
-            protected void paintComponent(Graphics paintGraphics) {
-                super.paintComponent(paintGraphics);
-                if (getText().isEmpty() && getForeground() == Color.LIGHT_GRAY) {
-                    paintGraphics.setColor(getForeground());
-                    paintGraphics.drawString("Enter a message...", 10, 20);
-                }
-            }
-        };
-        incidentDescription.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        incidentDescription.setForeground(Color.LIGHT_GRAY); // Set initial color to light gray
+        incidentDescription = createRoundedTextArea("Enter a message...", 583, 423);
+        incidentDescription.setForeground(Color.BLACK); // Set initial color to black
+
         incidentDescription.setWrapStyleWord(true);
         incidentDescription.setBounds(273, 65, 583, 423);
         incidentDescription.setLineWrap(true);
@@ -167,7 +160,6 @@ public class IncidentForm extends BaseForm {
         });
         incidentPanel.add(incidentDescription);
 
-        
         JLabel lblNewLabel = new JLabel("Enter First Name");
         lblNewLabel.setForeground(new Color(255, 255, 255));
         lblNewLabel.setFont(new Font("Times New Roman", Font.PLAIN, 11));
@@ -221,23 +213,25 @@ public class IncidentForm extends BaseForm {
         incidentPanel.add(submitbtn);
     }
     
- // Function to validate incidentDescription
-    private boolean validateIncidentDescription() {//function for required field
+    // Function to validate incidentDescription
+    private boolean validateIncidentDescription() { // function for required field
         if (incidentDescription.getText().equals("Enter a message...") || incidentDescription.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Incident description is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
     }
- // Function to validate formfield
-    private boolean validateFormFields() {//function for required field
+
+    // Function to validate formfield
+    private boolean validateFormFields() { // function for required field
         if (incidentFirstName.getText().isEmpty() || incidentLastName.getText().isEmpty() || incidentDate.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "First Name, Last Name, and Date are required fields.");
             return false;
         }
         return true;
     }
-    //function for submitbtn
+
+    // function for submitbtn
     private void submitIncident() {
         if (!validateFormFields()) {
             return;
@@ -245,7 +239,7 @@ public class IncidentForm extends BaseForm {
 
         try {
             String dateString = incidentDate.getText();
-            SimpleDateFormat formatDateString = new SimpleDateFormat("dd/MM/yyyy");//convert date to match the format
+            SimpleDateFormat formatDateString = new SimpleDateFormat("dd/MM/yyyy"); // convert date to match the format
             formatDateString.setLenient(false);
 
             Date parsedDate = null;
@@ -258,7 +252,7 @@ public class IncidentForm extends BaseForm {
 
             java.sql.Date convertedSQLdate = new java.sql.Date(parsedDate.getTime());
 
-            try (Connection connectSubmitIncident = getConnection()) {//call database and call all the rows
+            try (Connection connectSubmitIncident = getConnection()) { // call database and call all the rows
                 String checkQuery = "SELECT COUNT(*) FROM IncidentDB WHERE incident_firstName = ? " +
                                     "AND incident_lastName = ? AND incident_date = ?";
                 try (PreparedStatement checkStmt = connectSubmitIncident.prepareStatement(checkQuery)) {
@@ -270,8 +264,8 @@ public class IncidentForm extends BaseForm {
                     resultSubmitIncident.next();
                     int count = resultSubmitIncident.getInt(1);
 
-                    if (count > 0) {
-                        String updateQuery = "UPDATE IncidentDB SET incident_midName = ?, incident_suffix = ?, " + // update after changes
+                    if (count > 0) { // update after changes
+                        String updateQuery = "UPDATE IncidentDB SET incident_midName = ?, incident_suffix = ?, " + 
                                             "incident_type = ?, incident_description = ?, incident_progress = ? " +
                                             "WHERE incident_firstName = ? AND incident_lastName = ? AND incident_date = ?";
 
@@ -324,7 +318,7 @@ public class IncidentForm extends BaseForm {
         }
     }
 
-    private void clearFormFields() {//clear function after successfully inputting incident
+    private void clearFormFields() { // clear function after successfully inputting incident
         incidentFirstName.setText("");
         incidentMidName.setText("");
         incidentLastName.setText("");
@@ -335,7 +329,8 @@ public class IncidentForm extends BaseForm {
         incidentDescription.setText("Enter a message...");
         incidentDescription.setForeground(Color.LIGHT_GRAY);
     }
-    //function for to be used in summaryForm
+
+    // function for to be used in summaryForm
     public void fillData(String firstName, String middleName, String lastName, String suffix, String date, String progress, String description, String typeOfIncident) {
         incidentFirstName.setText(firstName);       
         incidentMidName.setText(middleName);     

@@ -51,18 +51,18 @@ public class HomepageForm extends BaseForm {
         lblWelcome.setHorizontalAlignment(SwingConstants.CENTER); // Center-align the text
         lblWelcome.setForeground(Color.WHITE); // Set the text color to white
         lblWelcome.setFont(new Font("Times New Roman", Font.BOLD, 47)); // Set the font style and size
-        lblWelcome.setBounds(328, 25, 272, 106); // Set the position and size of the label
+        lblWelcome.setBounds(305, 25, 272, 106); // Set the position and size of the label
         welcomePanel.add(lblWelcome); // Add the welcome label to the welcome panel
         
         JLabel logoLabel = new JLabel(new ImageIcon("Visuals/databaseLogoIcon.png")); // Create a label with an image icon
-        logoLabel.setBounds(191, 123, 551, 529); // Set the position and size of the image label
+        logoLabel.setBounds(166, 123, 551, 529); // Set the position and size of the image label
         welcomePanel.add(logoLabel); // Add the image label to the welcome panel
         
         JLabel lblBrgyMonitorIncidentReport = new JLabel("Barangay Monitoring and Incident Reporting System"); // Create a label for the system name
         lblBrgyMonitorIncidentReport.setHorizontalAlignment(SwingConstants.CENTER); // Center-align the text
         lblBrgyMonitorIncidentReport.setForeground(Color.WHITE); // Set the text color to white
         lblBrgyMonitorIncidentReport.setFont(new Font("Times New Roman", Font.BOLD, 27)); // Set the font style and size
-        lblBrgyMonitorIncidentReport.setBounds(98, 619, 752, 92); // Set the position and size of the label
+        lblBrgyMonitorIncidentReport.setBounds(73, 619, 752, 92); // Set the position and size of the label
         welcomePanel.add(lblBrgyMonitorIncidentReport); // Add the system name label to the welcome panel
     }
 }

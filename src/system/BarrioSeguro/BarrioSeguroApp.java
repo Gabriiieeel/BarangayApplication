@@ -2,9 +2,8 @@ package system.BarrioSeguro;
 
 import javax.swing.SwingUtilities;
 
-//MAIN FUNCTION
+// MAIN FUNCTION
 public class BarrioSeguroApp {
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             BarrioSeguro appController = new BarrioSeguro();
